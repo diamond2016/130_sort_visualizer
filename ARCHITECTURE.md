@@ -206,61 +206,24 @@ Since you need to let the user pick settings, you will use these "Form" elements
 
 ---
 
-#### A "Visual Blueprint" of your App
-If I were to write the HTML for your Vue component, it would look like this structure:
-
-```html
-<!-- The entire App -->
-<div id="app">
-  
-  <header>
-    <h1>Sort Visualizer</h1>
-  </header>
-
-  <main>
-    <!-- Navigation/Algorithm Selection -->
-    <nav>
-      <label for="algo-select">Algorithm:</label>
-      <select id="algo-select">
-        <option>Bubble Sort</option>
-        <option>Quick Sort</option>
-      </select>
-    </nav>
-
-    <!-- The actual visualization area -->
-    <section id="visualization-area">
-      <figure>
-        <canvas ref="canvas"></canvas>
-        <figcaption>Visualizing current array state</figcaption>
-      </figure>
-    </section>
-
-    <!-- The Statistics Sidebar -->
-    <aside id="stats-panel">
-      <section>
-        <h2>Statistics</h2>
-        <p>Comparisons: <span id="comp-count">0</span></p>
-        <p>Swaps: <span id="swap-count">0</span></p>
-      </section>
-    </aside>
-
-    <!-- Playback Controls -->
-    <section id="playback-controls">
-      <button>Start</button>
-      <button>Pause</button>
-      <button>Step</button>
-      
-      <label for="speed-slider">Speed:</label>
-      <input type="range" id="speed-slider" min="1" max="100">
-    </section>
-  </main>
-
-  <footer>
-    <p>Status: Ready</p>
-  </footer>
-
-</div>
-```
-
-#### Pro-Tip for Vue:
+#### Semantic layout
 When you build this in Vue, each of these `<section>` or `<aside>` blocks should eventually become its own **Component** (e.g., `StatsPanel.vue`, `ControlBar.vue`, `Visualizer.vue`). This keeps your code clean and follows the "Single Responsibility Principle."
+
+We have a "Main.vue" containing: Sort algorithm, Playback controls, visualization area
+We have a "VisualizationControl.vue": a panel side dx from "Main.vue", containing the visualization controls
+We have a "Statistics.vue". a section bottom of "Main.vue", in the footer,  to show statistics and a message area
+
+
+Main.vue for the main content: algorithm selection, playback controls, and visualization area
+VisualizationControl.vue for the side control panel
+Statistics.vue for the footer statistics and status message
+The app shell now lives in App.vue, and the Vue app mounts into index.html.
+
+Semantic HTML review
+The structure is now more semantic than the original inline version because it uses:
+
+main for the primary app content
+aside for the secondary control panel
+footer for the statistics/status area
+section and figure elements for grouped UI content
+proper labels and form controls
