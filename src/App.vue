@@ -50,7 +50,7 @@ import Statistics from "#/views/Statistics.vue";
   grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
   .app-body {
     grid-template-columns: 1fr;
   }

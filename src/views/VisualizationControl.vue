@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar" aria-labelledby="controls-heading">
     <section class="panel" aria-labelledby="controls-heading">
-      <h2 id="controls-heading">Visualization Controls</h2>
+      <h3 id="controls-heading">Visualization Controls</h3>
       <fieldset>
         <legend>Display settings</legend>
 
@@ -22,7 +22,7 @@
         <input id="sample-size" type="range" min="10" max="100" value="50" />
 
         <div class="speed-group">
-          <h3>Speed</h3>
+          <h4>Speed</h4>
           <label>
             <input type="radio" name="speed" value="slow" />
             Slow

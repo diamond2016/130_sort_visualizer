@@ -1,9 +1,11 @@
 <template>
   <main class="main-view">
+    <!-- Wrap the first two sections in a container for the row layout -->
+    <div class="controls-row">
     <section class="panel" aria-labelledby="algorithm-heading">
-      <h2 id="algorithm-heading">Sorting Algorithm</h2>
+      <h3 id="algorithm-heading">Sorting Algorithm</h3>
       <nav aria-label="Algorithm selector">
-        <label for="algorithm-select">Algorithm</label>
+        <label for="algorithm-select">Algorithm:&nbsp;</label>
         <select id="algorithm-select">
           <option value="bubble">Bubble Sort</option>
           <option value="insertion">Insertion Sort</option>
@@ -16,9 +18,8 @@
         </select>
       </nav>
     </section>
-
     <section class="panel" aria-labelledby="playback-heading">
-      <h2 id="playback-heading">Playback Controls</h2>
+      <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
         <button type="button">Start</button>
         <button type="button">Pause</button>
@@ -26,9 +27,10 @@
         <button type="button">Reset</button>
       </nav>
     </section>
+    </div>
 
     <section class="panel" aria-labelledby="visualization-heading">
-      <h2 id="visualization-heading">Visualization Area</h2>
+      <h3 id="visualization-heading">Visualization Area</h3>
       <figure class="canvas-card">
         <canvas aria-label="Sorting visualization"></canvas>
         <figcaption>Live view of the current array state.</figcaption>
@@ -42,6 +44,15 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.controls-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.controls-row .panel {
+  flex: 1;
 }
 
 .panel {

@@ -1,10 +1,13 @@
 <template>
   <footer class="stats-footer" aria-labelledby="stats-heading">
     <section class="panel" aria-labelledby="stats-heading">
-      <h2 id="stats-heading">Statistics</h2>
+      <h3 id="stats-heading">Statistics</h3>
+    <!-- New container for the two-column layout -->
+      <div class="stats-row">
       <p>Comparisons: <span>0</span></p>
       <p>Swaps: <span>0</span></p>
       <p class="status">Status: Ready</p>
+      </div>
     </section>
   </footer>
 </template>
@@ -12,6 +15,11 @@
 <style scoped>
 .stats-footer {
   display: flex;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
 }
 
 .panel {
@@ -33,6 +41,6 @@
 
 .status {
   margin-top: 0.75rem;
-  font-weight: 600;
+  font-weight: 300;
 }
 </style>
