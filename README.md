@@ -41,6 +41,9 @@ This is your end-to-end skeleton. Everything else in the challenge will hang off
 
 Testing: Run your tool and watch the array sort itself. The bars should start in random order and finish in ascending order. Try a few different sample sizes (10, 30, 50) and confirm the layout still looks right. If your bars overflow the screen or look squashed, adjust your scaling so the tallest bar uses most of the available height.
 
+THIS IS MY STEP1:
+![implementatiion of step1](step1.png)
+
 Step 2
 In this step your goal is to highlight what the algorithm is doing right now and show some live statistics.
 
