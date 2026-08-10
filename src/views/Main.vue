@@ -1,3 +1,41 @@
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+
+// step1: visualize array of integers
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+const maxValue = 100;
+const maxSamples = 15;
+
+const createRandomArray = (): number[] =>
+  Array.from({ length: maxSamples }, () => Math.floor(Math.random() * (maxValue)));
+
+const draw = (array: number[]) => {
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // 1. Clear the screen
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 2. Draw the bars
+  const barWidth = canvas.width / array.length;
+  
+  array.forEach((value, i) => {
+    const barHeight = (value / maxValue) * canvas.height;
+    ctx.fillStyle = 'skyblue'; // The "resting" color
+    ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
+  });
+};
+
+onMounted(() => {
+  const initialArray = createRandomArray();
+  draw(initialArray);
+});
+</script>
+
+
+
 <template>
   <main class="main-view">
     <!-- Wrap the first two sections in a container for the row layout -->
@@ -32,7 +70,7 @@
     <section class="panel" aria-labelledby="visualization-heading">
       <h3 id="visualization-heading">Visualization Area</h3>
       <figure class="canvas-card">
-        <canvas aria-label="Sorting visualization"></canvas>
+        <canvas ref="canvasRef" aria-label="Sorting visualization"></canvas>
         <figcaption>Live view of the current array state.</figcaption>
       </figure>
     </section>
