@@ -3,7 +3,7 @@ import App from "#/App.vue";
 
 async function main() {
   try {
-    createApp(App).mount("#app");
+    createApp(App);
   } catch (error) {
     console.error("❌ Failed to initialize client:", error);
   }
