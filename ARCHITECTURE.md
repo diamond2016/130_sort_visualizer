@@ -1,7 +1,4 @@
-1. The Architecture: Keep it in the Frontend (TypeScript)
-While it is tempting to use FastAPI (Python) to handle the "heavy lifting" of the algorithms, for this specific project, keep the algorithms in the Frontend (TypeScript).
-
-Here is why:
+1. Frontend only architecture
 
 The "Interactivity" Requirement: Step 3 requires "Pause," "Resume," and "Step Forward." If the algorithm is running on a backend, the backend has to finish the whole sort and send you a massive list of events, or you have to manage complex WebSocket connections to "pause" a running process on a server.
 
@@ -17,44 +14,17 @@ The ideal architecture:
 
 2. Managing Graphics
 
-In the web world, for a visualizer, you don't want to move a "turtle"; you want to paint pixels on a board. 
-You should use the **HTML5 Canvas API**. It is much more performant than using standard HTML <div> elements for hundreds of bars.
+ **HTML5 Canvas API**.
 
-The "Turtle-to-Canvas" translation:
-
-Turtle: turtle.forward(50) 
-→
 → Canvas: ctx.fillRect(x, y, width, height)
 Turtle: turtle.color("red") 
 →
 → Canvas: ctx.fillStyle = "red"
 A tiny preview of how your Vue component might look
 
-```ts
-// Inside your Vue component
-const canvasRef = ref<HTMLCanvasElement | null>(null);
-
-const draw = (array: number[]) => {
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  // 1. Clear the screen
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 2. Draw the bars
-  const barWidth = canvas.width / array.length;
-  
-  array.forEach((value, i) => {
-    const barHeight = (value / maxValue) * canvas.height;
-    ctx.fillStyle = 'skyblue'; // The "resting" color
-    ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
-  });
-};
 ```
 
-3. Your "Secret Weapon": TypeScript Generators
+3. TypeScript Generators
 To satisfy Step 4 of the challenge, you shouldn't just write a function that sorts. You should write a Generator Function. This is the "magic" that makes the animation possible.
 
 Instead of this:
@@ -103,7 +73,7 @@ const runSort = async () => {
   }
 };
 ```
-### yeld and emit
+### yeld with generator (ko emit)
 
 1. yield (The "Pull" Mechanism)
 yield is a feature of the JavaScript/TypeScript language itself (specifically, it's used in Generator Functions).
@@ -173,7 +143,7 @@ A minimal App.vue scaffold with a sort control panel and visualization container
 
 Since you are building a **Dashboard-style application** (a main view with controls and a visualization area), here is a breakdown of the semantic elements you should use.
 
-#### 1. Structural Elements (The "Skeleton")
+#### step1 creating Structural Elements (The "Skeleton")
 These define the high-level layout of your application.
 
 *   **`<header>`**: Use this for the top of your app. It should contain the title of the project (e.g., `<h1>Sort Visualizer</h1>`).
@@ -186,7 +156,7 @@ These define the high-level layout of your application.
 
 ---
 
-#### 2. Grouping & Content Elements (The "Body")
+####  (The "Body")
 These help organize the data inside your sections.
 
 *   **`<figure>`**: Since your visualization is essentially a "graphic" or a "diagram," wrap your `<canvas>` element inside a `<figure>`.
@@ -195,7 +165,7 @@ These help organize the data inside your sections.
 
 ---
 
-#### 3. Interactive "Widgets" (The "Controls")
+#### (The "Controls")
 Since you need to let the user pick settings, you will use these "Form" elements:
 
 *   **`<label>`**: **Crucial.** Every input must have a label. It tells the user (and screen readers) what the input is for.
@@ -207,23 +177,7 @@ Since you need to let the user pick settings, you will use these "Form" elements
 ---
 
 #### Semantic layout
-When you build this in Vue, each of these `<section>` or `<aside>` blocks should eventually become its own **Component** (e.g., `StatsPanel.vue`, `ControlBar.vue`, `Visualizer.vue`). This keeps your code clean and follows the "Single Responsibility Principle."
 
 We have a "Main.vue" containing: Sort algorithm, Playback controls, visualization area
 We have a "VisualizationControl.vue": a panel side dx from "Main.vue", containing the visualization controls
 We have a "Statistics.vue". a section bottom of "Main.vue", in the footer,  to show statistics and a message area
-
-
-Main.vue for the main content: algorithm selection, playback controls, and visualization area
-VisualizationControl.vue for the side control panel
-Statistics.vue for the footer statistics and status message
-The app shell now lives in App.vue, and the Vue app mounts into index.html.
-
-Semantic HTML review
-The structure is now more semantic than the original inline version because it uses:
-
-main for the primary app content
-aside for the secondary control panel
-footer for the statistics/status area
-section and figure elements for grouped UI content
-proper labels and form controls

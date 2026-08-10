@@ -1,10 +1,7 @@
-Summary of your first steps:
+Step 1 complete
 
-Setup: Create a Vue 3 project with TypeScript.
-Canvas: Create a component with a <canvas> element.
+- The app now renders a basic visualization canvas.
+- The initial array is generated as random integers in the range [0..100].
+- The next step is to implement the sorting generator and the animation loop.
 
-The "Draw" function: Write a function that takes an array of numbers and draws them as bars.
-The "Generator": Implement the bubbleSortGenerator shown above.
-The "Loop": Use an async function to iterate through the generator and call the draw function.
 
-If you do this, you will have completed Step 1 and Step 4 simultaneously
