@@ -4,8 +4,59 @@
     <meta charset="UTF-8" />
     <title>Sort Visualizer</title>
   </head>
+
   <body>
-    <div id="app"></div> <!-- Vue will inject itself here -->
-    <script type="module" src="/src/main.ts"></script>
+    <div id="app">
+      <!-- The entire App -->
+    
+    <header>
+      <h1>Sort Visualizer</h1>
+    </header>
+
+    <main>
+      <!-- Navigation/Algorithm Selection -->
+      <nav>
+        <label for="algo-select">Algorithm:</label>
+        <select id="algo-select">
+          <option>Bubble Sort</option>
+          <option>Quick Sort</option>
+        </select>
+      </nav>
+
+      <!-- The actual visualization area -->
+      <section id="visualization-area">
+        <figure>
+          <canvas ref="canvas"></canvas>
+          <figcaption>Visualizing current array state</figcaption>
+        </figure>
+      </section>
+
+      <!-- The Statistics Sidebar -->
+      <aside id="stats-panel">
+        <section>
+          <h2>Statistics</h2>
+          <p>Comparisons: <span id="comp-count">0</span></p>
+          <p>Swaps: <span id="swap-count">0</span></p>
+        </section>
+      </aside>
+
+      <!-- Playback Controls -->
+      <section id="playback-controls">
+        <button>Start</button>
+        <button>Pause</button>
+        <button>Step</button>
+        
+        <label for="speed-slider">Speed:</label>
+        <input type="range" id="speed-slider" min="1" max="100">
+      </section>
+    </main>
+
+    <footer>
+      <p>Status: Ready</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+
   </body>
 </html>

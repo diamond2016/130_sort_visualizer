@@ -5,24 +5,7 @@
       <p>Choose an algorithm and run the visualizer.</p>
     </header>
 
-    <section class="controls">
-      <div class="control-row">
-        <label for="algorithm">Algorithm</label>
-        <select id="algorithm" v-model="selectedAlgorithm">
-          <option value="bubble">Bubble Sort</option>
-          <option value="selection">Selection Sort</option>
-          <option value="insertion">Insertion Sort</option>
-          <option value="quick">Quick Sort</option>
-          <option value="merge">Merge Sort</option>
-        </select>
-      </div>
-
-      <div class="control-row buttons-row">
-        <button type="button" @click="startSort">Start</button>
-        <button type="button" @click="resetArray">Reset</button>
-      </div>
-    </section>
-
+  
     <section class="visualizer">
       <div class="visualizer-placeholder">
         <p>Visualization goes here.</p>

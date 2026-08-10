@@ -171,11 +171,96 @@ If you used emit, your algorithm would be "coupled" to Vue, making it much harde
 ### The main view
 A minimal App.vue scaffold with a sort control panel and visualization container.
 
-✅ Created App.vue with a simple sort visualizer UI scaffold.
+Since you are building a **Dashboard-style application** (a main view with controls and a visualization area), here is a breakdown of the semantic elements you should use.
 
-What it includes:
+#### 1. Structural Elements (The "Skeleton")
+These define the high-level layout of your application.
 
-Header with title and description
-Algorithm selector
-Start / Reset buttons
-Placeholder area for visualization
+*   **`<header>`**: Use this for the top of your app. It should contain the title of the project (e.g., `<h1>Sort Visualizer</h1>`).
+*   **`<main>`**: This is the most important tag. It should wrap the **primary content** of your application (the actual visualization and the main controls). There should only be one `<main>` per page.
+*   **`<nav>`**: Use this for your navigation or primary selection area. In your case, the **Algorithm Selector** (Bubble Sort, Quick Sort, etc.) is a navigation element.
+*   **`<section>`**: Use this to group related content. For example, a "Controls Section," a "Statistics Section," or a "Configuration Section." 
+    *   *Rule of thumb:* A `<section>` should almost always have a heading (`<h2>`-`<h6>`) inside it.
+*   **`<aside>`**: Perfect for "secondary" information that sits next to the main content. This is the ideal place for your **Live Statistics Overlay** (Comparisons, Swaps, Time).
+*   **`<footer>`**: Use this for a bottom bar that might show status messages (e.g., "Sorting Complete!" or "Error: Array out of bounds").
+
+---
+
+#### 2. Grouping & Content Elements (The "Body")
+These help organize the data inside your sections.
+
+*   **`<figure>`**: Since your visualization is essentially a "graphic" or a "diagram," wrap your `<canvas>` element inside a `<figure>`.
+*   **`<figcaption>`**: Use this inside a `<figure>` to provide a caption (e.g., "Current Algorithm: Quick Sort").
+*   **`<fieldset>` and `<legend>`**: These are used to group related form controls. For example, you might have a group of inputs for "Sample Size" and "Order," wrapped in a `<fieldset>` with a `<legend>` called "Data Configuration."
+
+---
+
+#### 3. Interactive "Widgets" (The "Controls")
+Since you need to let the user pick settings, you will use these "Form" elements:
+
+*   **`<label>`**: **Crucial.** Every input must have a label. It tells the user (and screen readers) what the input is for.
+*   **`<select>`**: The dropdown menu for choosing the algorithm.
+*   **`<input type="range">`**: The perfect "slider" widget for **Speed Control** or **Sample Size**.
+*   **`<button>`**: For "Start," "Pause," "Resume," and "Step."
+*   **`<input type="number">`**: If you want the user to type in a specific sample size instead of using a slider.
+
+---
+
+#### A "Visual Blueprint" of your App
+If I were to write the HTML for your Vue component, it would look like this structure:
+
+```html
+<!-- The entire App -->
+<div id="app">
+  
+  <header>
+    <h1>Sort Visualizer</h1>
+  </header>
+
+  <main>
+    <!-- Navigation/Algorithm Selection -->
+    <nav>
+      <label for="algo-select">Algorithm:</label>
+      <select id="algo-select">
+        <option>Bubble Sort</option>
+        <option>Quick Sort</option>
+      </select>
+    </nav>
+
+    <!-- The actual visualization area -->
+    <section id="visualization-area">
+      <figure>
+        <canvas ref="canvas"></canvas>
+        <figcaption>Visualizing current array state</figcaption>
+      </figure>
+    </section>
+
+    <!-- The Statistics Sidebar -->
+    <aside id="stats-panel">
+      <section>
+        <h2>Statistics</h2>
+        <p>Comparisons: <span id="comp-count">0</span></p>
+        <p>Swaps: <span id="swap-count">0</span></p>
+      </section>
+    </aside>
+
+    <!-- Playback Controls -->
+    <section id="playback-controls">
+      <button>Start</button>
+      <button>Pause</button>
+      <button>Step</button>
+      
+      <label for="speed-slider">Speed:</label>
+      <input type="range" id="speed-slider" min="1" max="100">
+    </section>
+  </main>
+
+  <footer>
+    <p>Status: Ready</p>
+  </footer>
+
+</div>
+```
+
+#### Pro-Tip for Vue:
+When you build this in Vue, each of these `<section>` or `<aside>` blocks should eventually become its own **Component** (e.g., `StatsPanel.vue`, `ControlBar.vue`, `Visualizer.vue`). This keeps your code clean and follows the "Single Responsibility Principle."
