@@ -31,10 +31,17 @@ const draw = (array: number[]) => {
   });
 };
 
-const sortAndDraw = (array: number[] | undefined) => {
-  bubbleSort(initialArray)
-  draw(initialArray)
+const start = (array: number[] | undefined) => {
+  if (initialArray) {
+    bubbleSort(initialArray)
+    draw(initialArray)
+  }
 }
+
+const reset = (array: number[] | undefined) => {
+  initialArray = createRandomArray();
+  draw(initialArray);
+  }
 
 onMounted(() => {
   initialArray = createRandomArray();
@@ -70,10 +77,10 @@ onMounted(() => {
     <section class="panel" aria-labelledby="playback-heading">
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
-        <button type="button" @click="sortAndDraw(arrayRef)">Start</button>
+        <button type="button" @click="start(arrayRef)">Start</button>
         <button type="button">Pause</button>
         <button type="button">Step</button>
-        <button type="button">Reset</button>
+        <button type="button" @click="reset(arrayRef)">Reset</button>
       </nav>
     </section>
     </div>
