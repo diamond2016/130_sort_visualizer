@@ -1,11 +1,15 @@
+<script lang="ts">
+// Default Props & Loading State
+const props = defineProps<{ comparisons: number; swaps: number }>()
+</script>
+
 <template>
   <footer class="stats-footer" aria-labelledby="stats-heading">
     <section class="panel" aria-labelledby="stats-heading">
       <h3 id="stats-heading">Statistics</h3>
-    <!-- New container for the two-column layout -->
       <div class="stats-row">
-      <p>Comparisons: <span>0</span></p>
-      <p>Swaps: <span>0</span></p>
+      <p>Comparisons: <span>{{ props.comparisons }}</span></p>
+      <p>Swaps: <span>{{ props.swaps }}</span></p>
       <p class="status">Status: Ready</p>
       </div>
     </section>

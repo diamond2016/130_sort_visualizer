@@ -8,3 +8,4 @@ export interface SortedReturnResult {
   swaps: number
 }
 
+export type SortGenerator = AsyncGenerator<SortedYieldResult, SortedReturnResult, void>

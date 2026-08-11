@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { bubbleSort, bubbleSortFunction } from "#/utils/bubblesort";
+import { bubbleSort } from "#/utils/bubblesort";
+import { SortGenerator, SortedReturnResult } from "#/models/sorter";
+import { sleep } from '#/utils/helper'
 
-// step1: visualize array of integers
+// --- State ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const maxSamples = 15;
-const speedTime = 100; // ms
-let initialArray: number[] | undefined 
-let arrayRef=ref<number[] | undefined>()
+const speedTime = 100; 
 
+const arrayRef = ref<number[]>([]);
+const comparing = ref<number[]>([]);
+const swapping = ref<number[]>([]); 
+const comparisons = ref<number>(0);
+const swaps = ref<number>(0);
+
+
+// --- Helpers ---
 const createRandomArray = (): number[] =>
   Array.from({ length: maxSamples }, () => Math.floor(Math.random() * (maxValue)));
 
@@ -32,34 +40,63 @@ const draw = (array: number[]) => {
   });
 };
 
-async function run() => {
-  if (!initialArray)
-    return
 
-  const sorter = bubbleSort(initialArray)
-  while (true) {
-    const { { type, indices }, done: boolean } = sorter.next(); // Pull the next event
-    if (done) break;                       // Stop if finished
+// --- Core Logic ---
+async function runSort(gen: SortGenerator): Promise<void>{
+  let step = await gen.next()
 
-    handleEvent(value);                    // Update the UI/Canvas
-    
-    // THE SPEED CONTROL:
-    // We force the caller to wait before it's allowed to "press the button" again.
-    await new Promise(r => setTimeout(r, speedTime)); 
-  } // while
-}
+  while (!step.done) {
+    if (step.value.type === 'compare') {
+      highlight(step.value.indices)
+      await sleep(300)
+    }
 
-const reset = (array: number[] | undefined) => {
-  initialArray = createRandomArray();
-  draw(initialArray);
+    if (step.value.type === 'swap') {
+      swap(step.value.indices)
+      await sleep(300)
+    }
+
+    step = await gen.next()
   }
 
-onMounted(() => {
-  initialArray = createRandomArray();
-  draw(initialArray);
-  arrayRef=ref<number[]>(initialArray)
+  // final value
+  if (step.value) {
+    comparisons.value = step.value.comps;
+    swaps.value = step.value.swaps;
+  }
+    console.log('Statistiche finali:', step.value)
 
-});
+}
+
+function highlight(indices: number[]) {
+  comparing.value = indices
+}
+function swap(indices: number[]) {
+  swapping.value = indices
+}
+
+const start = async () => {
+  // Pass the actual reactive array
+  const gen = bubbleSort(arrayRef.value);
+  await runSort(gen);
+}
+
+const reset = () => {
+  // Update the reactive arrayRef
+  arrayRef.value = createRandomArray();
+  draw(arrayRef.value);
+  
+  // Reset stats
+  comparisons.value = 0;
+  swaps.value = 0;
+  comparing.value = [];
+  swapping.value = [];
+}
+
+onMounted(() => {
+  arrayRef.value = createRandomArray();
+  draw(arrayRef.value);
+})
 
 </script>
 
@@ -88,10 +125,10 @@ onMounted(() => {
     <section class="panel" aria-labelledby="playback-heading">
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
-        <button type="button" @click="start(arrayRef)">Start</button>
+        <button type="button" @click="start()">Start</button>
         <button type="button">Pause</button>
         <button type="button">Step</button>
-        <button type="button" @click="reset(arrayRef)">Reset</button>
+        <button type="button" @click="reset()">Reset</button>
       </nav>
     </section>
     </div>

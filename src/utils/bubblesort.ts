@@ -19,7 +19,7 @@
  * - Time Complexity: O(n^2) in the worst and average cases.
  * - Space Complexity: O(1) (it is an in-place sorting algorithm).
  */
-import { SortedYieldResult, SortedReturnResult } from '#/models/sorter'
+import { SortGenerator } from '#/models/sorter'
 
 export function bubbleSortFunction(array: number[]): void {
   
@@ -48,7 +48,7 @@ export function bubbleSortFunction(array: number[]): void {
 
 export async function* bubbleSort(
   array: number[]
-): AsyncGenerator<SortedYieldResult, SortedReturnResult, void> {
+): SortGenerator {
 
   let sorted = false
   let comps = 0
