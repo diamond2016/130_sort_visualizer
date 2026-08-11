@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bubbleSort } from '../src/utils/bubblesort.ts';
+import { bubbleSort } from '#/utils/bubblesort';
 
 describe('bubbleSort', () => {
   it('should sort an empty array', () => {

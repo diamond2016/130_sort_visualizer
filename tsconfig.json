@@ -12,10 +12,15 @@
     "skipLibCheck": true,
     "noEmit": false, 
     "paths": {
-      "#/*": ["./src/*"],
-      "@/*": ["./src/*"]
+      "#/*": ["src/*"],
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.d.ts", 
+    "src/**/*.vue", 
+    "tests/**/*.ts" 
+  ],
   "types": ["vite/client"]
 }
