@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { bubbleSort } from "#/utils/bubblesort";
 
 // step1: visualize array of integers
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const maxSamples = 15;
+let initialArray: number[] | undefined 
+let arrayRef=ref<number[] | undefined>()
 
 const createRandomArray = (): number[] =>
   Array.from({ length: maxSamples }, () => Math.floor(Math.random() * (maxValue)));
@@ -28,10 +31,18 @@ const draw = (array: number[]) => {
   });
 };
 
+const sortAndDraw = (array: number[] | undefined) => {
+  bubbleSort(initialArray)
+  draw(initialArray)
+}
+
 onMounted(() => {
-  const initialArray = createRandomArray();
+  initialArray = createRandomArray();
   draw(initialArray);
+  arrayRef=ref<number[]>(initialArray)
+
 });
+
 </script>
 
 
@@ -59,7 +70,7 @@ onMounted(() => {
     <section class="panel" aria-labelledby="playback-heading">
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
-        <button type="button">Start</button>
+        <button type="button" @click="sortAndDraw(arrayRef)">Start</button>
         <button type="button">Pause</button>
         <button type="button">Step</button>
         <button type="button">Reset</button>
