@@ -6,7 +6,7 @@ import { bubbleSort, bubbleSortFunction } from "#/utils/bubblesort";
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const maxSamples = 15;
-const redDrawTime = 100; // ms
+const speedTime = 100; // ms
 let initialArray: number[] | undefined 
 let arrayRef=ref<number[] | undefined>()
 
@@ -32,11 +32,21 @@ const draw = (array: number[]) => {
   });
 };
 
-const start = (array: number[] | undefined) => {
-  if (initialArray) {
-    bubbleSortFunction(initialArray)
-    draw(initialArray)
-  }
+async function run() => {
+  if (!initialArray)
+    return
+
+  const sorter = bubbleSort(initialArray)
+  while (true) {
+    const { { type, indices }, done: boolean } = sorter.next(); // Pull the next event
+    if (done) break;                       // Stop if finished
+
+    handleEvent(value);                    // Update the UI/Canvas
+    
+    // THE SPEED CONTROL:
+    // We force the caller to wait before it's allowed to "press the button" again.
+    await new Promise(r => setTimeout(r, speedTime)); 
+  } // while
 }
 
 const reset = (array: number[] | undefined) => {

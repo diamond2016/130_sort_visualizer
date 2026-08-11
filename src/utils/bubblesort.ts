@@ -19,6 +19,8 @@
  * - Time Complexity: O(n^2) in the worst and average cases.
  * - Space Complexity: O(1) (it is an in-place sorting algorithm).
  */
+import { SortedYieldResult, SortedReturnResult } from '#/models/sorter'
+
 export function bubbleSortFunction(array: number[]): void {
   
     // 1
@@ -43,28 +45,37 @@ export function bubbleSortFunction(array: number[]): void {
 
 
 // version of bubblesort as Generator. Nothe the async. Returns Generator object (Iterator)
-export async function* bubbleSort(array: number[]) {
-  
-    // 1
-    let sorted = false
-    while (!sorted) {
-        sorted = true
 
-        for (let i = 0; i < array.length - 1; i++) {
-            // 1. PAUSE and tell the UI: "I am comparing these two"
-            yield { type: 'COMPARE', indices: [i, i + 1] }
-            
-            if (array[i] > array[i + 1]) {
-                const dummy: number = array[i]
-                array[i] = array [i + 1]
-                array[i + 1] = dummy
-                sorted = false
-                // 2. PAUSE and tell the UI: "I just swapped them!"
-                yield { type: 'SWAP', indices: [i, i + 1] };
-            }
-        }
+export async function* bubbleSort(
+  array: number[]
+): AsyncGenerator<SortedYieldResult, SortedReturnResult, void> {
 
-        if (sorted)
-            break
-    } // bubbleSort (in place)
+  let sorted = false
+  let comps = 0
+  let swaps = 0
+
+  while (!sorted) {
+    sorted = true
+
+    for (let i = 0; i < array.length - 1; i++) {
+      comps++
+
+      // 1. yield: confronto
+      yield { type: 'compare', indices: [i, i + 1] }
+
+      if (array[i] > array[i + 1]) {
+        const tmp = array[i]
+        array[i] = array[i + 1]
+        array[i + 1] = tmp
+
+        swaps++
+        sorted = false
+
+        // 2. yield: swap
+        yield { type: 'swap', indices: [i, i + 1] }
+      }
+    }
+  }
+
+  return { comps, swaps }
 }
