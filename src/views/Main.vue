@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { bubbleSort } from "#/utils/bubblesort";
+import { bubbleSort, bubbleSortFunction } from "#/utils/bubblesort";
 
 // step1: visualize array of integers
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -34,7 +34,7 @@ const draw = (array: number[]) => {
 
 const start = (array: number[] | undefined) => {
   if (initialArray) {
-    bubbleSort(initialArray)
+    bubbleSortFunction(initialArray)
     draw(initialArray)
   }
 }
