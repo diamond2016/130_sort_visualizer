@@ -6,6 +6,7 @@ import { bubbleSort } from "#/utils/bubblesort";
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const maxSamples = 15;
+const redDrawTime = 100; // ms
 let initialArray: number[] | undefined 
 let arrayRef=ref<number[] | undefined>()
 

@@ -10,7 +10,8 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "noEmit": false, 
+    "noEmit": false,
+    "baseUrl": "./", 
     "paths": {
       "#/*": ["src/*"],
       "@/*": ["src/*"]

@@ -1,3 +1,4 @@
+## Frontend 
 1. Frontend only architecture
 
 The "Interactivity" Requirement: Step 3 requires "Pause," "Resume," and "Step Forward." If the algorithm is running on a backend, the backend has to finish the whole sort and send you a massive list of events, or you have to manage complex WebSocket connections to "pause" a running process on a server.
@@ -12,7 +13,7 @@ The ideal architecture:
 - Rendering Layer (HTML5 Canvas): A component that listens to the state and draws the bars.
 
 
-2. Managing Graphics
+1. Managing Graphics
 
  **HTML5 Canvas API**.
 
@@ -35,7 +36,10 @@ function bubbleSort(arr) {
 }
 ```
 
-You do this:
+## Sorting and stepping 
+
+1. sorter as a Generator 
+You do this The Benefit: The function is now a stream of events. It doesn't just return a result; it returns a sequence of "moments".
 ```ts
 // This is a Generator!
 async function* bubbleSortGenerator(arr: number[]) {
@@ -56,72 +60,113 @@ async function* bubbleSortGenerator(arr: number[]) {
 }
 ```
 
+1. Managing Iterator (Generator) object
 How the Vue component uses it:
-You can now "loop" through the algorithm, and after every yield, you await a small delay (the animation speed) and then redraw the canvas.
+
+To understand how the caller manages a yield, you have to stop thinking of a function as a "task that runs to completion" and start thinking of it as a "state machine" that you can step through.
+
+When you call a generator function, it doesn't actually run the code inside. Instead, it returns a Generator Object (also called an Iterator). This object is the "remote control" for the function.
+
+The only way to interact with that remote control is through one specific method: .next().
+
+The Mechanics of .next()
+Every time the caller calls .next(), two things happen:
+- The generator "wakes up" and runs until it hits the next yield statement.
+- The generator "freezes" and returns an object to the caller that looks exactly like this:
 
 ```ts
-// The "Animation Loop"
-const runSort = async () => {
-  const sorter = bubbleSortGenerator(myArray);
-  
-  for await (const event of sorter) {
-    // 1. Update the UI state based on the event (e.g., highlight indices)
-    // 2. Wait for the user-defined speed (e.g., 50ms)
-    await new Promise(resolve => setTimeout(resolve, speed));
-    // 3. Redraw the canvas
-    draw(myArray);
-  }
-};
+{
+  value: any,  // The data you passed to the yield keyword
+  done: boolean // True if the function reached the end or a 'return' statement
+}
 ```
-### yeld with generator (ko emit)
 
-1. yield (The "Pull" Mechanism)
-yield is a feature of the JavaScript/TypeScript language itself (specifically, it's used in Generator Functions).
+The Step-by-Step Flow
+Let's trace a simplified version:
+The Generator (bubbleSort.ts):
 
-When you use yield, you are literally pausing the execution of the function. The function doesn't just send a message; it "freezes" in time at that exact line. It stays frozen until the person calling it says, "Okay, give me the next piece of data."
-
-Who is in control? The Caller (the loop/the UI).
-Analogy: A vending machine. You press a button, the machine gives you a snack (yield), and then it stops and waits for you to press the button again. It cannot give you a second snack until you interact with it.
-In your project:
-The Algorithm is the vending machine. The UI is the person pressing the button. The UI decides when to press the button (this is how you implement Speed Control and Pause).
 
 ```ts
-// The Algorithm (The Vending Machine)
 function* bubbleSort(arr) {
-  yield "START"; // Pauses here
-  // ... logic ...
-  yield "SWAP";  // Pauses here
+  yield "START";           // Yield 1
+  yield "SWAP_OCCURRED";   // Yield 2
+  return "FINISHED";       // End of function
 }
 
-// The UI (The Person)
-const sorter = bubbleSort(myArray);
 
-// The UI decides the pace:
-const step = async () => {
-  const result = sorter.next(); // "Pressing the button"
-  if (!result.done) {
-    console.log(result.value); // "Got the snack"
-    await sleep(speed);       // The UI controls the delay!
-  }
-};
+// The Caller
+// Step A: Initialization
+
+const sorter = bubbleSort([3, 1, 2]); 
+// Nothing has printed yet. The function is "frozen" at the very beginning.
+
+//Step B: The First "Pull"
+const result = sorter.next(); 
+// The generator runs until it hits the first yield.
+// result is now: { value: "START", done: false }
+
+//Step C: The Second "Pull"
+const result2 = sorter.next();
+// The generator resumes from where it left off and runs until the next yield.
+// result2 is now: { value: "SWAP_OCCURRED", done: false }
+
+//Step D: The Final "Pull"
+const result3 = sorter.next();
+// The generator runs until it hits the 'return' or the end.
+// result3 is now: { value: "FINISHED", done: true }
 ```
 
-2. emit (The "Push" Mechanism)
-emit is a feature of the Vue Framework. It is an "Event-Driven" pattern.
+1. How this manages your "Interactivity"
+This is the most important part. Because the Caller is the one deciding when to call .next(), the Caller has total control over the Timing and Flow.
 
-When you emit, the component is "shouting" into the void. It says, "Hey! Something happened!" and then it immediately continues running its own code. It doesn't wait for anyone to listen; it just fires the signal and moves on.
-
-Who is in control? The Sender (the component emitting).
-Analogy: A doorbell. You press the button (emit), and a sound is made. You don't stop your life to wait for the person inside to hear it; you just keep walking. The person inside hears it and reacts, but the doorbell doesn't "pause" you.
-In your project:
-If you used emit for the algorithm, the algorithm would be "shouting" swaps and comparisons as fast as the CPU can possibly go. You would have a very hard time telling the algorithm to "slow down" because the algorithm isn't listening to you—it's just shouting.
+Scenario 1: Implementing "Speed Control"
+The caller doesn't just call .next() as fast as possible. It uses a delay.
 
 
-This is a massive hint to use yield.
+Apply
+// The "Animation Loop"
+async function run() {
+  const sorter = bubbleSort(myArray);
+  
+  while (true) {
+    const { value, done } = sorter.next(); // Pull the next event
+    if (done) break;                       // Stop if finished
 
-If you use yield, your algorithm remains "Pure Logic." It doesn't know Vue exists. It doesn't know about buttons or canvases. It just knows how to sort and how to yield events. This makes your code incredibly easy to test and, as the challenge says, easy to add new algorithms to.
+    handleEvent(value);                    // Update the UI/Canvas
+    
+    // THE SPEED CONTROL:
+    // We force the caller to wait before it's allowed to "press the button" again.
+    await new Promise(r => setTimeout(r, speedValue)); 
+  }
+}
+Scenario 2: Implementing "Pause"
+The caller simply checks a variable before deciding to call .next().
 
-If you used emit, your algorithm would be "coupled" to Vue, making it much harder to move or reuse.
+
+Apply
+async function run() {
+  const sorter = bubbleSort(myArray);
+
+  while (true) {
+    if (isPaused) {
+      // If paused, we just wait in this loop without calling .next()
+      await new Promise(r => setTimeout(r, 100));
+      continue; 
+    }
+
+    const { value, done } = sorter.next();
+    if (done) break;
+
+    handleEvent(value);
+    await new Promise(r => setTimeout(r, speedValue));
+  }
+}
+
+
+Summary
+The Generator is the Producer: It produces events but has no idea how fast they are being consumed.
+The Caller is the Consumer: It "pulls" events using .next(). Because it is the one pulling, it can decide to wait (Speed), decide to stop (Pause), or decide to do just one (Step).
+
 
 ### Project structure
 ```text
@@ -129,7 +174,8 @@ If you used emit, your algorithm would be "coupled" to Vue, making it much harde
 ├── src/
 │   ├── main.ts          <-- This mounts the Vue app
 │   ├── App.vue          <-- This is your main Visualizer component
-│   ├── algorithms/      <-- Put your Sort Generators here
+|   |__ views/           <-- Vue views, Main.view is the container
+│   ├── utils/      <-- Put your Sort Generators here
 │   │   └── bubbleSort.ts
 │   └── components/      <-- Your Canvas/Renderer components
 ├── index.html           <-- THE ENTRY POINT (Vite needs this!)
