@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 // Default Props & Loading State
 const props = defineProps<{ comparisons: number; swaps: number }>()
 </script>
