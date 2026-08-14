@@ -3,18 +3,20 @@ import { onMounted, ref } from "vue";
 import { bubbleSort } from "#/utils/bubblesort";
 import { SortGenerator, SortedReturnResult } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
+import Statistics from "#/views/Statistics.vue";
 
 // --- State ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const maxSamples = 15;
-const speedTime = 100; 
+const speedTime = 200; 
 
+let swapn: number = 0
+let compn: number = 0
 const arrayRef = ref<number[]>([]);
-const comparing = ref<number[]>([]);
-const swapping = ref<number[]>([]); 
-const comparisons = ref<number>(0);
-const swaps = ref<number>(0);
+const comparisons = ref<number>(compn);
+const swaps = ref<number>(swapn);
+const statusMessage = ref<string>("");
 
 
 // --- Helpers ---
@@ -47,32 +49,36 @@ async function runSort(gen: SortGenerator): Promise<void>{
 
   while (!step.done) {
     if (step.value.type === 'compare') {
-      highlight(step.value.indices)
-      await sleep(300)
+      compare(step.value.indices)
+      await sleep(speedTime)
     }
 
     if (step.value.type === 'swap') {
       swap(step.value.indices)
-      await sleep(300)
+      await sleep(speedTime)
     }
 
+    draw(arrayRef.value); 
     step = await gen.next()
   }
 
   // final value
-  if (step.value) {
-    comparisons.value = step.value.comps;
-    swaps.value = step.value.swaps;
-  }
-    console.log('Statistiche finali:', step.value)
+  statusMessage.value = "Elaborazione completata" 
 
 }
 
-function highlight(indices: number[]) {
-  comparing.value = indices
+function compare(indices: number[]) {
+  compn++;
+  comparisons.value = compn
+  status(" Comparing: ", indices)
 }
 function swap(indices: number[]) {
-  swapping.value = indices
+  swapn++;
+  swaps.value = swapn
+  status(" Swapping: ", indices)
+}
+function status(message: string, arr: number[]) {
+  statusMessage.value =  message + arr
 }
 
 const start = async () => {
@@ -89,8 +95,7 @@ const reset = () => {
   // Reset stats
   comparisons.value = 0;
   swaps.value = 0;
-  comparing.value = [];
-  swapping.value = [];
+  statusMessage.value = "";
 }
 
 onMounted(() => {
@@ -140,6 +145,12 @@ onMounted(() => {
         <figcaption>Live view of the current array state.</figcaption>
       </figure>
     </section>
+
+    <Statistics 
+      :comparisons="comparisons" 
+      :swaps="swaps" 
+      :statusMessage="statusMessage" 
+    />
   </main>
 </template>
 
@@ -200,3 +211,4 @@ canvas {
   background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 </style>
+ 

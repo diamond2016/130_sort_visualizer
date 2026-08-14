@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import MainView from "#/views/Main.vue";
 import VisualizationControl from "#/views/VisualizationControl.vue";
-import Statistics from "#/views/Statistics.vue";
 </script>
 
 <template>
@@ -15,8 +14,6 @@ import Statistics from "#/views/Statistics.vue";
       <MainView />
       <VisualizationControl />
     </div>
-
-    <Statistics />
   </div>
 </template>
 
