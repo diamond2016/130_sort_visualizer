@@ -227,3 +227,4 @@ Since you need to let the user pick settings, you will use these "Form" elements
 We have a "Main.vue" containing: Sort algorithm, Playback controls, visualization area
 We have a "VisualizationControl.vue": a panel side dx from "Main.vue", containing the visualization controls
 We have a "Statistics.vue". a section bottom of "Main.vue", in the footer,  to show statistics and a message area
+

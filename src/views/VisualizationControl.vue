@@ -1,45 +1,57 @@
+<script setup lang="ts">
+import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
+
+const { settings } = useVisualizationSettings();
+</script>
+
 <template>
   <aside class="sidebar" aria-labelledby="controls-heading">
     <section class="panel" aria-labelledby="controls-heading">
       <h3 id="controls-heading">Visualization Controls</h3>
-      <fieldset>
-        <legend>Display settings</legend>
+      <form @submit.prevent>
+        <fieldset>
+          <legend>Display settings</legend>
 
-        <label for="display-mode">Display</label>
-        <select id="display-mode">
-          <option value="bars">Bars</option>
-          <option value="dots">Dots</option>
-        </select>
+          <label for="display-mode">Display</label>
+          <select id="display-mode" v-model="settings.displayMode">
+            <option value="bars">Bars</option>
+            <option value="dots">Dots</option>
+          </select>
 
-        <label for="order-mode">Sample order</label>
-        <select id="order-mode">
-          <option value="random">Random</option>
-          <option value="increasing">Increasing</option>
-          <option value="decreasing">Decreasing</option>
-        </select>
+          <label for="order-mode">Sample order</label>
+          <select id="order-mode" v-model="settings.orderMode">
+            <option value="random">Random</option>
+            <option value="increasing">Increasing</option>
+            <option value="decreasing">Decreasing</option>
+          </select>
 
-        <label for="sample-size">Sample size</label>
-        <input id="sample-size" type="range" min="10" max="100" value="50" />
+          <label for="sample-size">Sample size</label>
+          <select id="sample-size" v-model.number="settings.maxSamples">
+            <option v-for="n in 50" :key="n" :value="n">
+              {{ n }}
+            </option>
+          </select>
 
-        <div class="speed-group">
-          <h4>Speed</h4>
-          <label>
-            <input type="radio" name="speed" value="slow" />
-            Slow
-          </label>
-          <label>
-            <input type="radio" name="speed" value="medium" checked />
-            Medium
-          </label>
-          <label>
-            <input type="radio" name="speed" value="fast" />
-            Fast
-          </label>
-        </div>
+          <div class="speed-group">
+            <h4>Speed</h4>
+            <label>
+              <input type="radio" name="speed" value="slow" v-model="settings.speed" />
+              Slow
+            </label>
+            <label>
+              <input type="radio" name="speed" value="medium" v-model="settings.speed" />
+              Medium
+            </label>
+            <label>
+              <input type="radio" name="speed" value="fast" v-model="settings.speed" />
+              Fast
+            </label>
+          </div>
 
-        <label for="delay">Delay per step (ms)</label>
-        <input id="delay" type="number" min="100" max="1000" value="250" />
-      </fieldset>
+          <label for="delay">Delay per step (ms)</label>
+          <input id="delay" type="number" min="100" max="1000" v-model.number="settings.delay" />
+        </fieldset>
+      </form>
     </section>
   </aside>
 </template>

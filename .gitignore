@@ -39,3 +39,7 @@ coverage/
 # temporary files
 *.tmp
 *.temp
+
+
+# project specific
+issues/

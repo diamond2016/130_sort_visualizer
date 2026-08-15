@@ -4,11 +4,13 @@ import { bubbleSort } from "#/utils/bubblesort";
 import { SortGenerator, SortedReturnResult } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
+import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
+
+const { settings } = useVisualizationSettings();
 
 // --- State ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
-const maxSamples = 15;
 const speedTime = 200; 
 
 let pauseState = false
@@ -22,7 +24,7 @@ const statusMessage = ref<string>("");
 
 // --- Helpers ---
 const createRandomArray = (): number[] =>
-  Array.from({ length: maxSamples }, () => Math.floor(Math.random() * (maxValue)));
+  Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
 
 const draw = (array: number[]) => {
   const canvas = canvasRef.value;
