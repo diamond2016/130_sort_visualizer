@@ -55,7 +55,6 @@ const { settings } = useVisualizationSettings();
     </section>
   </aside>
 </template>
-
 <style scoped>
 .sidebar {
   display: flex;
@@ -64,20 +63,20 @@ const { settings } = useVisualizationSettings();
 
 .panel {
   border: 1px solid #d1d5db;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 8px;
+  padding: 0.75rem;
   background: #f9fafb;
 }
 
-.panel h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.1rem;
+.panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
 }
 
 fieldset {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   border: none;
   padding: 0;
   margin: 0;
@@ -85,29 +84,32 @@ fieldset {
 
 legend {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
 }
 
 label {
   font-weight: 500;
+  font-size: 0.85rem;
 }
 
 input,
 select {
-  padding: 0.6rem 0.7rem;
+  padding: 0.4rem 0.5rem;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 6px;
   font: inherit;
+  font-size: 0.85rem;
 }
 
 .speed-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
-.speed-group h3 {
+.speed-group h4 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 </style>

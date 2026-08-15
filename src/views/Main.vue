@@ -188,17 +188,16 @@ onMounted(() => {
     />
   </main>
 </template>
-
 <style scoped>
 .main-view {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .controls-row {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .controls-row .panel {
@@ -207,43 +206,43 @@ onMounted(() => {
 
 .panel {
   border: 1px solid #d1d5db;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 8px;
+  padding: 0.75rem;
   background: #f9fafb;
 }
 
-.panel h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1.1rem;
+.panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
 }
 
 .button-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 button,
 select {
-  padding: 0.6rem 0.9rem;
+  padding: 0.4rem 0.6rem;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 6px;
   font: inherit;
+  font-size: 0.85rem;
 }
 
 .canvas-card {
   margin: 0;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 8px;
+  padding: 0.75rem;
   background: #fff;
 }
 
 canvas {
   width: 100%;
-  min-height: 260px;
-  border-radius: 8px;
+  min-height: 200px;
+  border-radius: 6px;
   background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
 }
 </style>
- 
