@@ -11,11 +11,12 @@ const maxValue = 100;
 const maxSamples = 15;
 const speedTime = 200; 
 
-let swapn: number = 0
-let compn: number = 0
+let pauseState = false
+let sortingId = 0
+
 const arrayRef = ref<number[]>([]);
-const comparisons = ref<number>(compn);
-const swaps = ref<number>(swapn);
+const comparisons = ref<number>(0);
+const swaps = ref<number>(0);
 const statusMessage = ref<string>("");
 
 
@@ -44,10 +45,19 @@ const draw = (array: number[]) => {
 
 
 // --- Core Logic ---
-async function runSort(gen: SortGenerator): Promise<void>{
+async function runSort(gen: SortGenerator, currentSortingId: number): Promise<void>{
   let step = await gen.next()
 
   while (!step.done) {
+    if (sortingId !== currentSortingId) {
+      return;
+    }
+
+    if (pauseState)  {
+      await sleep(speedTime)
+      continue
+    }
+
     if (step.value.type === 'compare') {
       compare(step.value.indices)
       await sleep(speedTime)
@@ -58,23 +68,26 @@ async function runSort(gen: SortGenerator): Promise<void>{
       await sleep(speedTime)
     }
 
+    if (sortingId !== currentSortingId) {
+      return;
+    }
+
     draw(arrayRef.value); 
     step = await gen.next()
   }
 
   // final value
-  statusMessage.value = "Elaborazione completata" 
-
+  if (sortingId === currentSortingId) {
+    statusMessage.value = "Elaborazione completata" 
+  }
 }
 
 function compare(indices: number[]) {
-  compn++;
-  comparisons.value = compn
+  comparisons.value++
   status(" Comparing: ", indices)
 }
 function swap(indices: number[]) {
-  swapn++;
-  swaps.value = swapn
+  swaps.value++
   status(" Swapping: ", indices)
 }
 function status(message: string, arr: number[]) {
@@ -82,17 +95,36 @@ function status(message: string, arr: number[]) {
 }
 
 const start = async () => {
+  sortingId++
+  const currentSortingId = sortingId
+
   // Pass the actual reactive array
+  pauseState = false
+  comparisons.value = 0
+  swaps.value = 0
   const gen = bubbleSort(arrayRef.value);
-  await runSort(gen);
+  await runSort(gen, currentSortingId);
 }
 
+const pause = () => {
+  // Freeze loop 
+  pauseState = true
+}
+const resume = () => {
+  // clear loop (nothing if not looping)
+  pauseState = false
+}
+
+
 const reset = () => {
+  sortingId++
+
   // Update the reactive arrayRef
   arrayRef.value = createRandomArray();
   draw(arrayRef.value);
   
   // Reset stats
+  pauseState = false
   comparisons.value = 0;
   swaps.value = 0;
   statusMessage.value = "";
@@ -131,7 +163,8 @@ onMounted(() => {
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
         <button type="button" @click="start()">Start</button>
-        <button type="button">Pause</button>
+        <button type="button" @click="pause()"">Pause</button>
+        <button type="button" @click="resume()">Resume</button>
         <button type="button">Step</button>
         <button type="button" @click="reset()">Reset</button>
       </nav>
