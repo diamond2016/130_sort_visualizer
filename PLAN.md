@@ -1,17 +1,35 @@
-Step 1 complete
+## Step 1 complete
 
 - The app now renders a basic visualization canvas.
 - The initial array is generated as random integers in the range [0..100].
 - The next step is to implement the sorting generator and the animation loop.
 
 
-140826:
-refactor
-Statistics.vue: Updated to use <script setup lang="ts"> and configured it to accept three props: comparisons, swaps, and statusMessage. It displays these props dynamically.
-Main.vue
-: Imported the Statistics component, created reactive state for comparisons, swaps, and statusMessage, and passed them down to the <Statistics> component rendered at the bottom of 
-Main.vue
-.
-App.vue: Removed the <Statistics> component and its import, leaving the structural layout management to 
-Main.vue
-.
+## Step 2: Implement Sorting Generators and Animation Loop
+
+**Implement Logic Layer (Generators)**: 
+- Create a TypeScript file (e.g., `src/algorithms/bubbleSort.ts`) implementing the Bubble Sort algorithm.
+- Use the `Generator` pattern to `yield` specific event objects: 
+
+```ts 
+{ type: 'compare', indices: [i, j] } 
+{ type: 'swap', indices: [i, j] }
+{ type: 'write', value: x, index: i }
+```
+TODO: write state management to-be implemented.
+
+**Implement Animation Controller**
+- In `Main.vue`, implement an asynchronous animation loop (using `requestAnimationFrame` or a controlled `setTimeout` to respect the "animation speed" requirement. 
+- The loop should consume the generator, waiting for each `yield` before proceeding to the next step.
+
+**Connect Logic to State**:
+- Update the reactive state in `Main.vue` (the array and the statistics) based on the events yielded by the generator.
+- Ensure `comparisons` and `swaps` are incremented in the state to update `Statistics.vue` in real-time.
+
+**Integrate Rendering**:
+- Ensure the Canvas component reacts to the updated array in `Main.vue` to redraw the bars during the animation.
+
+**Verification**:
+- Confirm that the animation is "pausable" or "steppable" (as suggested by `ARCHITECTURE.md`) by controlling the execution of the generator loop.
+
+TODO: step to-be implemented.
