@@ -14,9 +14,8 @@
 ```ts 
 { type: 'compare', indices: [i, j] } 
 { type: 'swap', indices: [i, j] }
-{ type: 'write', value: x, index: i }
 ```
-TODO: write state management to-be implemented.
+
 
 **Implement Animation Controller**
 - In `Main.vue`, implement an asynchronous animation loop (using `requestAnimationFrame` or a controlled `setTimeout` to respect the "animation speed" requirement. 
@@ -28,8 +27,13 @@ TODO: write state management to-be implemented.
 
 **Integrate Rendering**:
 - Ensure the Canvas component reacts to the updated array in `Main.vue` to redraw the bars during the animation.
+TODO: ensure that swaps elements are higlighted, tbd for other algorithms.
+
 
 **Verification**:
 - Confirm that the animation is "pausable" or "steppable" (as suggested by `ARCHITECTURE.md`) by controlling the execution of the generator loop.
 
 TODO: step to-be implemented.
+
+### Implementation
+1.  modify the swap(), to highlight, refactor to avoid duplications.

@@ -26,6 +26,23 @@ const statusMessage = ref<string>("");
 const createRandomArray = (): number[] =>
   Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
 
+
+/**
+ * Helper to draw a single bar on the canvas.
+ */
+const drawBar = (
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  index: number,
+  value: number,
+  barWidth: number,
+  color: string
+) => {
+  const barHeight = (value / maxValue) * canvas.height;
+  ctx.fillStyle = color;
+  ctx.fillRect(index * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
+};
+
 const draw = (array: number[]) => {
   const canvas = canvasRef.value;
   if (!canvas) return;
@@ -39,9 +56,7 @@ const draw = (array: number[]) => {
   const barWidth = canvas.width / array.length;
   
   array.forEach((value, i) => {
-    const barHeight = (value / maxValue) * canvas.height;
-    ctx.fillStyle = 'skyblue'; // The "resting" color
-    ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
+    drawBar(ctx, canvas, i, value, barWidth, 'skyblue');
   });
 };
 
@@ -66,7 +81,7 @@ async function runSort(gen: SortGenerator, currentSortingId: number): Promise<vo
     }
 
     if (step.value.type === 'swap') {
-      swap(step.value.indices)
+      swap(arrayRef.value, step.value.indices)
       await sleep(speedTime)
     }
 
@@ -88,13 +103,27 @@ function compare(indices: number[]) {
   comparisons.value++
   status(" Comparing: ", indices)
 }
-function swap(indices: number[]) {
+
+function swap(arr: number[], indices: number[]) {
   swaps.value++
   status(" Swapping: ", indices)
+  
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const barWidth = canvas.width / arr.length;
+  indices.forEach((index) => {
+    drawBar(ctx, canvas, index, arr[index], barWidth, 'red');
+  });
 }
+
+
 function status(message: string, arr: number[]) {
   statusMessage.value =  message + arr
 }
+
 
 const start = async () => {
   sortingId++
@@ -112,11 +141,11 @@ const pause = () => {
   // Freeze loop 
   pauseState = true
 }
+
 const resume = () => {
   // clear loop (nothing if not looping)
   pauseState = false
 }
-
 
 const reset = () => {
   sortingId++
