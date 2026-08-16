@@ -53,6 +53,7 @@ export async function* bubbleSort(
   let sorted = false
   let comps = 0
   let swaps = 0
+  let max_index = 0
 
   while (!sorted) {
     sorted = true
@@ -68,6 +69,7 @@ export async function* bubbleSort(
         array[i] = array[i + 1]
         array[i + 1] = tmp
 
+        max_index = i + 1
         swaps++
         sorted = false
 
@@ -75,6 +77,9 @@ export async function* bubbleSort(
         yield { type: 'swap', indices: [i, i + 1] }
       }
     }
+
+    // 3. write; signal the new element correctly positioned
+    yield { type: 'write', indices: [max_index, max_index] }
   }
 
   return { comps, swaps }

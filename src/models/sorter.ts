@@ -1,5 +1,5 @@
 export interface SortedYieldResult {
-  type: 'compare' | 'swap', 
+  type: 'compare' | 'swap' | 'write', 
   indices: number[]
 }
 

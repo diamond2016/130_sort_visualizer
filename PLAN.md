@@ -14,6 +14,7 @@
 ```ts 
 { type: 'compare', indices: [i, j] } 
 { type: 'swap', indices: [i, j] }
+{ type 'write', indices: [i,j]} // j==i
 ```
 
 
@@ -28,7 +29,11 @@
 **Integrate Rendering**:
 - Ensure the Canvas component reacts to the updated array in `Main.vue` to redraw the bars during the animation.
 TODO: ensure that swaps elements are higlighted, tbd for other algorithms.
-
+- a resting/idle colour for bars that aren’t being touched (cyan)
+- a comparison colour for the two indices the algorithm is currently comparing (yellow)
+- a swap colour for indices that are currently being swapped or written (red)
+- a colour for the elemen written (in this case in the correct position (green)
+Update your bubble sort so that the right indices are highlighted at the right moment.
 
 **Verification**:
 - Confirm that the animation is "pausable" or "steppable" (as suggested by `ARCHITECTURE.md`) by controlling the execution of the generator loop.
@@ -36,4 +41,6 @@ TODO: ensure that swaps elements are higlighted, tbd for other algorithms.
 TODO: step to-be implemented.
 
 ### Implementation
-1.  modify the swap(), to highlight, refactor to avoid duplications.
+1.  modify the swap(), to highlight swapping, refactor to avoid duplications.
+1.  implement write and comparisons color
+1.  implement step.

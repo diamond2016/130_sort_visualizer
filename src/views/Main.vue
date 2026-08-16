@@ -76,17 +76,18 @@ async function runSort(gen: SortGenerator, currentSortingId: number): Promise<vo
     }
 
     if (step.value.type === 'compare') {
-      compare(step.value.indices)
+      compare(arrayRef.value, step.value.indices)
       await sleep(speedTime)
     }
 
-    if (step.value.type === 'swap') {
+    else if (step.value.type === 'swap') {
       swap(arrayRef.value, step.value.indices)
       await sleep(speedTime)
     }
 
-    if (sortingId !== currentSortingId) {
-      return;
+    else if (step.value.type === 'write') {
+      write(arrayRef.value, step.value.indices)
+      await sleep(speedTime)
     }
 
     draw(arrayRef.value); 
@@ -99,9 +100,19 @@ async function runSort(gen: SortGenerator, currentSortingId: number): Promise<vo
   }
 }
 
-function compare(indices: number[]) {
+function compare(arr: number[], indices: number[]) {
   comparisons.value++
   status(" Comparing: ", indices)
+  
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const barWidth = canvas.width / arr.length;
+  indices.forEach((index) => {
+    drawBar(ctx, canvas, index, arr[index], barWidth, 'yellow');
+  });  
 }
 
 function swap(arr: number[], indices: number[]) {
@@ -119,6 +130,18 @@ function swap(arr: number[], indices: number[]) {
   });
 }
 
+
+function write(arr: number[], indices: number[]) {
+  const canvas = canvasRef.value;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const barWidth = canvas.width / arr.length;
+  indices.forEach((index) => {
+    drawBar(ctx, canvas, index, arr[index], barWidth, 'green');
+  });
+}
 
 function status(message: string, arr: number[]) {
   statusMessage.value =  message + arr
@@ -160,6 +183,11 @@ const reset = () => {
   swaps.value = 0;
   statusMessage.value = "";
 }
+
+const step = () => {
+  //TODO
+}
+
 
 onMounted(() => {
   arrayRef.value = createRandomArray();
