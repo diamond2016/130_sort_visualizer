@@ -43,5 +43,5 @@ TODO: step to-be implemented.
 ### Implementation
 1.  modify the swap(), to highlight swapping, refactor to avoid duplications. OK
 1.  implement write and comparisons color OK
-1.  implement step. TODO
+1.  implement step 2
 
