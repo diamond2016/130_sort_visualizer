@@ -41,6 +41,7 @@ Update your bubble sort so that the right indices are highlighted at the right m
 TODO: step to-be implemented.
 
 ### Implementation
-1.  modify the swap(), to highlight swapping, refactor to avoid duplications.
-1.  implement write and comparisons color
-1.  implement step.
+1.  modify the swap(), to highlight swapping, refactor to avoid duplications. OK
+1.  implement write and comparisons color OK
+1.  implement step. TODO
+

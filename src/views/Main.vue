@@ -16,10 +16,12 @@ const speedTime = 200;
 let pauseState = false
 let sortingId = 0
 
-const arrayRef = ref<number[]>([]);
-const comparisons = ref<number>(0);
-const swaps = ref<number>(0);
-const statusMessage = ref<string>("");
+const arrayRef = ref<number[]>([])
+const comparing = ref<number[]>([])
+const swapping = ref<number[]>([])
+const writing = ref<number[]>([])
+const gen = ref<SortGenerator | null>(null)
+const running = ref(false)
 
 
 // --- Helpers ---
@@ -100,6 +102,75 @@ async function runSort(gen: SortGenerator, currentSortingId: number): Promise<vo
   }
 }
 
+
+// animation functions
+function onCompare(indices: number[]) {
+  comparing.value = indices
+}
+
+function onSwap(indices: number[]) {
+  swapping.value = indices
+  const [i, j] = indices
+  const tmp = arrayRef.value[i]
+  arrayRef.value[i] = arrayRef.value[j]
+  arrayRef.value[j] = tmp
+}
+
+function onWrite(indices: number[]) {
+  writing.value.push(indices[0])
+}
+
+
+// 1. start, 2. pause 3. resume 4. restart 5. step.
+// start
+async function start() {
+  running.value = true
+  while (running.value) {
+    await step()
+    await sleep(200)   // animazione
+  }
+}
+
+// pause
+function pause() {
+  running.value = false
+}
+
+// resume
+function pause() {
+  running.value = false
+}
+
+// restart
+function reset() {
+  running.value = false
+  numbers.value = [...originalNumbers]
+  comparing.value = []
+  swapping.value = []
+  writing.value = []
+  gen.value = bubbleSort(numbers.value)
+}
+
+// step: single pass 
+async function step() {
+  if (!gen.value) return
+
+  const result = await gen.value.next()
+
+  if (!result.done) {
+    const { type, indices } = result.value
+
+    if (type === 'compare') onCompare(indices)
+    if (type === 'swap') onSwap(indices)
+    if (type === 'write') onWrite(indices)
+  } else {
+    running.value = false
+    console.log('Statistiche finali:', result.value)
+  }
+}
+
+
+/*
 function compare(arr: number[], indices: number[]) {
   comparisons.value++
   status(" Comparing: ", indices)
@@ -142,50 +213,9 @@ function write(arr: number[], indices: number[]) {
     drawBar(ctx, canvas, index, arr[index], barWidth, 'green');
   });
 }
-
+*/
 function status(message: string, arr: number[]) {
   statusMessage.value =  message + arr
-}
-
-
-const start = async () => {
-  sortingId++
-  const currentSortingId = sortingId
-
-  // Pass the actual reactive array
-  pauseState = false
-  comparisons.value = 0
-  swaps.value = 0
-  const gen = bubbleSort(arrayRef.value);
-  await runSort(gen, currentSortingId);
-}
-
-const pause = () => {
-  // Freeze loop 
-  pauseState = true
-}
-
-const resume = () => {
-  // clear loop (nothing if not looping)
-  pauseState = false
-}
-
-const reset = () => {
-  sortingId++
-
-  // Update the reactive arrayRef
-  arrayRef.value = createRandomArray();
-  draw(arrayRef.value);
-  
-  // Reset stats
-  pauseState = false
-  comparisons.value = 0;
-  swaps.value = 0;
-  statusMessage.value = "";
-}
-
-const step = () => {
-  //TODO
 }
 
 
@@ -224,8 +254,8 @@ onMounted(() => {
         <button type="button" @click="start()">Start</button>
         <button type="button" @click="pause()"">Pause</button>
         <button type="button" @click="resume()">Resume</button>
-        <button type="button">Step</button>
-        <button type="button" @click="reset()">Reset</button>
+        <button type="button" @click="restart()">Resume</button>
+        <button type="button" @click="step()">Resume</button>
       </nav>
     </section>
     </div>

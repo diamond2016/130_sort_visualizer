@@ -45,23 +45,19 @@ export function bubbleSortFunction(array: number[]): void {
 
 
 // version of bubblesort as Generator. Nothe the async. Returns Generator object (Iterator)
-
 export async function* bubbleSort(
   array: number[]
 ): SortGenerator {
 
-  let sorted = false
   let comps = 0
   let swaps = 0
-  let max_index = 0
 
-  while (!sorted) {
-    sorted = true
+  for (let end = array.length - 1; end > 0; end--) {
 
-    for (let i = 0; i < array.length - 1; i++) {
+    for (let i = 0; i < end; i++) {
       comps++
 
-      // 1. yield: confronto
+      // STEP 1: confronto
       yield { type: 'compare', indices: [i, i + 1] }
 
       if (array[i] > array[i + 1]) {
@@ -69,17 +65,15 @@ export async function* bubbleSort(
         array[i] = array[i + 1]
         array[i + 1] = tmp
 
-        max_index = i + 1
         swaps++
-        sorted = false
 
-        // 2. yield: swap
+        // STEP 2: swap
         yield { type: 'swap', indices: [i, i + 1] }
       }
     }
 
-    // 3. write; signal the new element correctly positioned
-    yield { type: 'write', indices: [max_index, max_index] }
+    // STEP 3: write (elemento in posizione definitiva)
+    yield { type: 'write', indices: [end, end] }
   }
 
   return { comps, swaps }
