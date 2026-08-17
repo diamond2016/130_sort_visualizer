@@ -23,14 +23,14 @@ You can pick the platform that suits you best. A terminal/CLI implementation (us
 
 A small note before we start: you’ll be tempted to just run the algorithm and update the screen at each iteration. That works at first, but quickly tangles your sorting logic with your rendering logic. We’ll structure things so that algorithms produce a stream of events (compared these two indices, wrote this value to that index) and the renderer consumes them. That separation is what’ll make adding new algorithms and new display modes painless later on.
 
-Step Zero
+## Step Zero
 In this introductory step you’re going to set your environment up ready to begin developing and testing your solution.
 
 Choose your target platform, terminal/CLI, browser/web, or native desktop GUI, and the programming language to go with it. I’d encourage you to pick a stack you’re comfortable with for both UI rendering and handling user input, because you’ll be doing plenty of both.
 
 Have a think about how you’ll handle the animation loop. Most platforms have a natural answer, a render loop tied to the frame rate in a browser or a GUI toolkit, a timed redraw in a terminal. Whichever route you take, you’ll want a way to do work, redraw, and pause for a configurable interval between steps.
 
-Step 1
+## Step 1
 In this step your goal is to render an array of values on screen and watch a single sorting algorithm run end-to-end.
 
 Start by generating an array of, say, 30 random integers. Render each value as a vertical bar whose height is proportional to its value, with the bars laid out left-to-right across the screen. Don’t worry about colours, controls, or configuration yet, get the rendering working first.
@@ -44,7 +44,7 @@ Testing: Run your tool and watch the array sort itself. The bars should start in
 **implementation step1**:
 ![implementatiion of step1](step1.png)
 
-Step 2
+## Step 2
 In this step your goal is to highlight what the algorithm is doing right now and show some live statistics.
 
 Up to now your bars have all been the same colour. That makes it hard to see what the algorithm is up to at any given moment. Pick three colours: a resting/idle colour for bars that aren’t being touched, a comparison colour for the two indices the algorithm is currently comparing, and a swap/write colour for indices that are currently being swapped or written. Update your bubble sort so that the right indices are highlighted at the right moment.
@@ -58,7 +58,7 @@ Testing: Run your tool and confirm the highlighted bars match what bubble sort i
 **implementation at step2**:
 ![implementatiion of step2](step2.png)
 
-Step 3
+## Step 3
 In this step your goal is to give the user playback controls and a configurable speed.
 
 Right now the visualisation runs straight through from start to finish with no way to pause or replay it. Add controls that let the user start a run, pause it mid-way, resume from where it paused, restart it from the beginning, and step forward by a single operation at a time. The exact bindings are your call, keys in a terminal, buttons in a GUI, both in a web app.
@@ -69,7 +69,7 @@ Make sure your controls remain responsive at all speeds. At the fastest preset, 
 
 Testing: Start a run, pause it half-way through, and confirm the bars freeze in place with the comparison/swap highlights still visible. Resume and confirm it picks up from where it left off. Hit restart and confirm the array goes back to its original state and the stats reset to zero. Use the step control to advance one operation at a time and watch the comparison/swap highlights move with each press. Try the fast preset and confirm pause still responds promptly.
 
-Step 4
+## Step 4
 In this step your goal is to refactor bubble sort behind a clean algorithm interface, then add two more algorithms.
 
 So far your sorting code and your rendering code are probably mixed together. We’re going to separate them. Define an interface for a “sortable run”, something that, given an array, produces a stream of events describing what the algorithm is doing. The two essential events are compared these two indices and wrote this value to that index. A generator (or coroutine, or async iterator, depending on your language) is a natural fit: each yield is one event, and the renderer pulls events out one at a time.
@@ -80,7 +80,7 @@ With the interface in place, add insertion sort and selection sort. Each one sho
 
 Testing: Run each of the three algorithms on the same input and compare. Bubble sort should swap adjacent elements; insertion sort should sweep one element at a time into its correct place in the sorted prefix; selection sort should make far fewer swaps but lots of comparisons. The stats counters should reflect the differences, selection sort, for example, will show roughly the same number of comparisons as bubble sort but far fewer writes.
 
-Step 5
+## Step 5
 In this step your goal is to add merge sort, quick sort, and heap sort.
 
 Each algorithm should slot into the same algorithm interface you defined in Step 4. If the interface is right, your renderer shouldn’t need any changes, every algorithm is just a different sequence of comparison and write events.
@@ -89,22 +89,17 @@ A small word on merge sort: because it uses an auxiliary array, you’ll need to
 
 Testing: Run each of the three algorithms and watch them. Merge sort should produce the classic “halves coming back together” pattern. Quick sort should show pivots being placed and partitions taking shape. Heap sort should show a chaotic phase (heap construction) followed by an orderly phase (extracting the max from the back of the array). Confirm the correctness check from Step 2 passes for all three on a variety of input sizes.
 
-Step 6
+## Step 6
 In this step your goal is to add shell sort and radix sort.
 
 Radix sort is the odd one out. It’s not comparison-based, it sorts by repeatedly distributing values into buckets based on individual digits. You’ll need to decide how to express what radix sort is doing through your event stream. One approach is to emit write events as values move from the array into the buckets and back. Another is to extend your event vocabulary with something like a bucketed this value event. Either is a reasonable design choice, the goal is for the viewer to be able to see the algorithm working.
 
 Testing: Run shell sort and watch how the array goes from chaotic to “fairly ordered” to fully sorted as the gap shrinks. Run radix sort on a fixed-width integer array and confirm it sorts correctly. Compare radix sort’s stats counters to the comparison sorts, radix sort should have zero comparisons (or very few, depending on how you count) and a number of writes proportional to the number of digits times the array size.
 
-Step 7
+## Step 7
 In this step your goal is to add the numbers display mode behind a pluggable rendering interface.
 
 Up to now everything has been bars. The numbers display mode renders each value as a small labelled tile or box showing the numeric value, laid out in a row. When two indices are being compared or swapped, the corresponding tiles should be visually lifted or separated from the main row so the active operation is unambiguous, with the comparison/swap colours from Step 2 applied.
-
-That should look something like this:
-
-
-
 
 Just as you separated algorithms from rendering in Step 4, now separate the bars renderer from a generic rendering interface. Each renderer should accept the same array and event stream and decide how to draw it. Adding the numbers renderer should not require changes to any of the algorithms.
 
@@ -112,7 +107,7 @@ Add a display mode selector to your UI so the user can switch between bars and n
 
 Testing: Run each of your eight algorithms in numbers mode and confirm the lift behaviour matches what you expect, when bubble sort compares two adjacent elements, those two tiles should lift; when it swaps them, both should be highlighted in the swap colour. Switch between bars and numbers mid-run if you can; the algorithm should keep running and just the rendering should change.
 
-Step 8
+## Step 8
 In this step your goal is to add sample size and sample order configuration, polish the user experience, and finish the documentation.
 
 Add controls that let the user select the sample size (the number of elements in the array, with sensible minimum and maximum bounds for your platform) and the initial sample order. Support at least three orders: random, reversed, and already sorted. When the user restarts a run, regenerate a fresh sample of the configured size and order, except for already sorted, which is deterministic by definition. This means consecutive runs of the same algorithm exercise different inputs.
@@ -125,7 +120,8 @@ Finally, write a short README documenting how to run your tool, how to choose be
 
 Testing: Try every combination of configuration: each algorithm, each sample size from your minimum to your maximum, each sample order, each display mode. Confirm the on-screen configuration always matches what you’ve selected. Confirm that two consecutive runs of bubble sort with random order produce different starting arrays, but two consecutive runs with already sorted order produce the same one. Watch the completion sweep at the end of a run and confirm the stats freeze on the final values. Hand your README to a friend and ask them to add a hypothetical “cocktail sort” algorithm; if they can do it without reading your renderer code, you’ve nailed the abstraction.
 
-Going Further
+
+### Going Further
 Here are some ideas to take your sorting visualiser further:
 
 Add more algorithms: cocktail sort, comb sort, gnome sort, Tim sort, intro sort, or even bogo sort for fun.
