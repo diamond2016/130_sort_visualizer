@@ -41,7 +41,7 @@ This is your end-to-end skeleton. Everything else in the challenge will hang off
 
 Testing: Run your tool and watch the array sort itself. The bars should start in random order and finish in ascending order. Try a few different sample sizes (10, 30, 50) and confirm the layout still looks right. If your bars overflow the screen or look squashed, adjust your scaling so the tallest bar uses most of the available height.
 
-THIS IS MY IMPLEMENTATION AT THE MOMENT (coverse STEP1 and more):
+**implementation step1**:
 ![implementatiion of step1](step1.png)
 
 Step 2
@@ -54,6 +54,9 @@ Next, add a small statistics overlay somewhere on the screen showing the number 
 Finally, when the algorithm finishes, validate that the array is actually sorted. If it isn’t, surface a clear error, this’ll save you a lot of pain later when you’re implementing trickier algorithms and a subtle bug slips in.
 
 Testing: Run your tool and confirm the highlighted bars match what bubble sort is doing, the two compared bars should light up in the comparison colour, and when a swap happens you should see the swap colour. Watch the stats counters and sanity check them: for a small array, count a few comparisons by eye and confirm the counter agrees. At the end of the run, deliberately break the algorithm (e.g. comment out the swap) and confirm your validation catches it.
+
+**implementation at step2**:
+![implementatiion of step2](step2.png)
 
 Step 3
 In this step your goal is to give the user playback controls and a configurable speed.

@@ -57,7 +57,7 @@ export async function* bubbleSort(
     for (let i = 0; i < end; i++) {
       comps++
 
-      // STEP 1: confronto
+      // STEP 1: compare
       yield { type: 'compare', indices: [i, i + 1] }
 
       if (array[i] > array[i + 1]) {
@@ -72,7 +72,7 @@ export async function* bubbleSort(
       }
     }
 
-    // STEP 3: write (elemento in posizione definitiva)
+    // STEP 3: write 
     yield { type: 'write', indices: [end, end] }
   }
 

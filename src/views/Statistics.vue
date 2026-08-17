@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Default Props & Loading State
-const props = defineProps<{ comparisons: number; swaps: number, statusMessage: string }>()
+const props = defineProps<{ comparisons: number; swaps: number, writes: number, statusMessage: string }>()
 </script>
 
 <template>
@@ -10,6 +10,7 @@ const props = defineProps<{ comparisons: number; swaps: number, statusMessage: s
       <div class="stats-row">
       <p>Comparisons: <span>{{ props.comparisons }}</span></p>
       <p>Swaps: <span>{{ props.swaps }}</span></p>
+      <p>Writes: <span>{{ props.writes }}</span></p>
       <p class="status">Status: {{ props.statusMessage }}</p>
       </div>
     </section>

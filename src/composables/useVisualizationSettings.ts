@@ -17,7 +17,7 @@ const settings = reactive<VisualizationSettings>({
   orderMode: "random",
   maxSamples: 15,
   speed: "medium",
-  delay: 200,
+  delay: 400, // slow
 });
 
 export function useVisualizationSettings() {

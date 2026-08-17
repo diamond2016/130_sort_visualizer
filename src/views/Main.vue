@@ -1,33 +1,35 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { bubbleSort } from "#/utils/bubblesort";
-import { SortGenerator, SortedReturnResult } from "#/models/sorter";
+import { SortGenerator, SortedReturnResult, GraphContext } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
 
 const { settings } = useVisualizationSettings();
 
-// --- State ---
+// --- State / Reactive state ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
-const speedTime = 200; 
+const speedTime = 400; 
 
 let pauseState = false
-let sortingId = 0
 
 const arrayRef = ref<number[]>([])
+let originalArray: number[] = []
 const comparing = ref<number[]>([])
 const swapping = ref<number[]>([])
 const writing = ref<number[]>([])
 const gen = ref<SortGenerator | null>(null)
 const running = ref(false)
-
+const statusMessage = ref<string>("") 
+const comparisons = ref<number>(0)
+const swaps = ref<number>(0)
+const writes = ref<number>(0)
 
 // --- Helpers ---
 const createRandomArray = (): number[] =>
   Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
-
 
 /**
  * Helper to draw a single bar on the canvas.
@@ -44,6 +46,7 @@ const drawBar = (
   ctx.fillStyle = color;
   ctx.fillRect(index * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
 };
+
 
 const draw = (array: number[]) => {
   const canvas = canvasRef.value;
@@ -63,94 +66,8 @@ const draw = (array: number[]) => {
 };
 
 
+
 // --- Core Logic ---
-async function runSort(gen: SortGenerator, currentSortingId: number): Promise<void>{
-  let step = await gen.next()
-
-  while (!step.done) {
-    if (sortingId !== currentSortingId) {
-      return;
-    }
-
-    if (pauseState)  {
-      await sleep(speedTime)
-      continue
-    }
-
-    if (step.value.type === 'compare') {
-      compare(arrayRef.value, step.value.indices)
-      await sleep(speedTime)
-    }
-
-    else if (step.value.type === 'swap') {
-      swap(arrayRef.value, step.value.indices)
-      await sleep(speedTime)
-    }
-
-    else if (step.value.type === 'write') {
-      write(arrayRef.value, step.value.indices)
-      await sleep(speedTime)
-    }
-
-    draw(arrayRef.value); 
-    step = await gen.next()
-  }
-
-  // final value
-  if (sortingId === currentSortingId) {
-    statusMessage.value = "Elaborazione completata" 
-  }
-}
-
-
-// animation functions
-function onCompare(indices: number[]) {
-  comparing.value = indices
-}
-
-function onSwap(indices: number[]) {
-  swapping.value = indices
-  const [i, j] = indices
-  const tmp = arrayRef.value[i]
-  arrayRef.value[i] = arrayRef.value[j]
-  arrayRef.value[j] = tmp
-}
-
-function onWrite(indices: number[]) {
-  writing.value.push(indices[0])
-}
-
-
-// 1. start, 2. pause 3. resume 4. restart 5. step.
-// start
-async function start() {
-  running.value = true
-  while (running.value) {
-    await step()
-    await sleep(200)   // animazione
-  }
-}
-
-// pause
-function pause() {
-  running.value = false
-}
-
-// resume
-function pause() {
-  running.value = false
-}
-
-// restart
-function reset() {
-  running.value = false
-  numbers.value = [...originalNumbers]
-  comparing.value = []
-  swapping.value = []
-  writing.value = []
-  gen.value = bubbleSort(numbers.value)
-}
-
 // step: single pass 
 async function step() {
   if (!gen.value) return
@@ -163,64 +80,112 @@ async function step() {
     if (type === 'compare') onCompare(indices)
     if (type === 'swap') onSwap(indices)
     if (type === 'write') onWrite(indices)
+    
+    await sleep(speedTime)
+    draw(arrayRef.value); // returnsa to "rest" color of bars in evidence 
+  
   } else {
     running.value = false
+    draw(arrayRef.value);
     console.log('Statistiche finali:', result.value)
   }
 }
 
 
-/*
-function compare(arr: number[], indices: number[]) {
+// animation functions
+// compare (yellow)
+function onCompare(indices: number[]) {
+  comparing.value = indices
   comparisons.value++
-  status(" Comparing: ", indices)
+  statusMessage.value = `Comparing: ${indices}`
   
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
 
-  const barWidth = canvas.width / arr.length;
+  const barWidth = canvas.width / arrayRef.value.length
   indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arr[index], barWidth, 'yellow');
-  });  
+    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'yellow');
+  })
 }
 
-function swap(arr: number[], indices: number[]) {
+// swap (red)
+function onSwap(indices: number[]) {
+  swapping.value = indices
   swaps.value++
-  status(" Swapping: ", indices)
-  
+  statusMessage.value = `Swapping: ${indices}`
   const canvas = canvasRef.value;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-
-  const barWidth = canvas.width / arr.length;
+  const barWidth = canvas.width / arrayRef.value.length;
   indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arr[index], barWidth, 'red');
-  });
+    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'red');
+  })
 }
 
-
-function write(arr: number[], indices: number[]) {
+// write (green)
+function onWrite(indices: number[]) {
+  writing.value = indices
+  writes.value++
+  statusMessage.value = `Writing: ${indices}`
   const canvas = canvasRef.value;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const barWidth = canvas.width / arrayRef.value.length;
 
-  const barWidth = canvas.width / arr.length;
-  indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arr[index], barWidth, 'green');
-  });
+  writing.value.push(indices[0])
+   indices.forEach((index) => {
+    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'green');
+  })
 }
-*/
-function status(message: string, arr: number[]) {
-  statusMessage.value =  message + arr
+
+
+
+// Commands: 1. start, 2. pause 3. resume 4. restart 5. step.
+// start
+async function start() {
+  running.value = true
+  statusMessage.value = "" 
+  gen.value = bubbleSort(arrayRef.value)
+  while (running.value) {
+    await step() // animate
+  }
+}
+
+// pause
+function pause() {
+  running.value = false
+}
+
+// resume
+async function resume() {
+  running.value = true
+  while (running.value) {
+    await step() // animate
+  }
+}
+
+// reset
+function reset() {
+  running.value = false
+  arrayRef.value = [...originalArray]
+  draw(arrayRef.value)
+  comparing.value = []
+  swapping.value = []
+  writing.value = []
+  statusMessage.value = "press Start" 
+  comparisons.value = 0
+  swaps.value = 0
+  writes.value = 0
 }
 
 
 onMounted(() => {
   arrayRef.value = createRandomArray();
+  originalArray = [...arrayRef.value]
   draw(arrayRef.value);
 })
 
@@ -252,10 +217,10 @@ onMounted(() => {
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
         <button type="button" @click="start()">Start</button>
-        <button type="button" @click="pause()"">Pause</button>
+        <button type="button" @click="pause()">Pause</button>
         <button type="button" @click="resume()">Resume</button>
-        <button type="button" @click="restart()">Resume</button>
-        <button type="button" @click="step()">Resume</button>
+        <button type="button" @click="reset()">Reset</button>
+        <button type="button" @click="step()">Step</button>
       </nav>
     </section>
     </div>
@@ -271,6 +236,7 @@ onMounted(() => {
     <Statistics 
       :comparisons="comparisons" 
       :swaps="swaps" 
+      :writes="writes"
       :statusMessage="statusMessage" 
     />
   </main>
