@@ -38,7 +38,6 @@ Update your bubble sort so that the right indices are highlighted at the right m
 **Verification**:
 - Confirm that the animation is "pausable" or "steppable" (as suggested by `ARCHITECTURE.md`) by controlling the execution of the generator loop.
 
-TODO: step to-be implemented.
 
 ### Implementation
 1.  modify the swap(), to highlight swapping, refactor to avoid duplications. OK
