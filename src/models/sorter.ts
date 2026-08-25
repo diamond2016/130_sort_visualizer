@@ -9,5 +9,6 @@ export interface SortedReturnResult {
 }
 
 export type SortingState = 'idle' | 'running' | 'paused' | 'finished'
+export type SortingAlgorithm = 'bubbleSort' | 'insertionSort' | 'selectionSort' | 'mergeSort' | 'quickSort' | 'heapSort' | 'shellSort' | 'radixSort'
 
 export type SortGenerator = AsyncGenerator<SortedYieldResult, SortedReturnResult, void>

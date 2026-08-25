@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, onUnmounted } from "vue";
+import { computed, onMounted, ref, onUnmounted, watch } from "vue";
 import { bubbleSort } from "#/utils/bubblesort";
 import { isSorted } from "#/utils/validator";
-import { SortGenerator, SortingState } from "#/models/sorter";
+import { SortGenerator, SortingState, SortingAlgorithm } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
@@ -13,7 +13,7 @@ const { settings } = useVisualizationSettings();
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const sortingState = ref<SortingState>('idle');
-
+const sortingAlgorithm = ref<SortingAlgorithm>('bubbleSort')
 const canStart = computed(() => sortingState.value === 'idle');
 const canPause = computed(() => sortingState.value === 'running');
 const canResume = computed(() => sortingState.value === 'paused');
@@ -70,6 +70,12 @@ function resetTimer() {
 // --- Helpers ---
 const createRandomArray = (): number[] =>
   Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
+
+watch(
+  () => sortingAlgorithm,
+  (newAlgorithm) => {
+    console.log(newAlgorithm)
+})
 
 /**
  * Helper to draw a single bar on the canvas.
@@ -271,17 +277,19 @@ onUnmounted(() => {
     <section class="panel" aria-labelledby="algorithm-heading">
       <h3 id="algorithm-heading">Sorting Algorithm</h3>
       <nav aria-label="Algorithm selector">
-        <label for="algorithm-select">Algorithm:&nbsp;</label>
-        <select id="algorithm-select">
-          <option value="bubble">Bubble Sort</option>
-          <option value="insertion">Insertion Sort</option>
-          <option value="selection">Selection Sort</option>
-          <option value="merge">Merge Sort</option>
-          <option value="quick">Quick Sort</option>
-          <option value="heap">Heap Sort</option>
-          <option value="shell">Shell Sort</option>
-          <option value="radix">Radix Sort</option>
-        </select>
+        <form @submit.prevent>
+          <label for="algorithm-select">Algorithm:&nbsp;</label>
+          <select id="algorithm-select" v-model="sortingAlgorithm">
+            <option value="bubbleSort">Bubble Sort</option>
+            <option value="insertionSort">Insertion Sort</option>
+            <option value="selectionSort">Selection Sort</option>
+            <option value="mergeSort">Merge Sort</option>
+            <option value="quickSort">Quick Sort</option>
+            <option value="heapSort">Heap Sort</option>
+            <option value="shellSort">Shell Sort</option>
+            <option value="radixSort">Radix Sort</option>
+          </select>
+        </form>
       </nav>
     </section>
     <section class="panel" aria-labelledby="playback-heading">
