@@ -1,6 +1,15 @@
 <script setup lang="ts">
-// Default Props & Loading State
-const props = defineProps<{ comparisons: number; swaps: number, writes: number, statusMessage: string }>()
+import { computed } from "vue";
+
+const props = defineProps<{
+  comparisons: number;
+  swaps: number;
+  writes: number;
+  statusMessage: string;
+  elapsedTime: number;
+}>();
+
+const formattedTime = computed(() => `${props.elapsedTime.toFixed(2)}s`);
 </script>
 
 <template>
@@ -8,10 +17,11 @@ const props = defineProps<{ comparisons: number; swaps: number, writes: number, 
     <section class="panel" aria-labelledby="stats-heading">
       <h3 id="stats-heading">Statistics</h3>
       <div class="stats-row">
-      <p>Comparisons: <span>{{ props.comparisons }}</span></p>
-      <p>Swaps: <span>{{ props.swaps }}</span></p>
-      <p>Writes: <span>{{ props.writes }}</span></p>
-      <p class="status">Status: {{ props.statusMessage }}</p>
+        <p>Comparisons: <span>{{ props.comparisons }}</span></p>
+        <p>Swaps: <span>{{ props.swaps }}</span></p>
+        <p>Writes: <span>{{ props.writes }}</span></p>
+        <p>Time: <span>{{ formattedTime }}</span></p>
+        <p class="status">Status: {{ props.statusMessage }}</p>
       </div>
     </section>
   </footer>

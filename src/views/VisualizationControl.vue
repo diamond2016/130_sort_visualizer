@@ -49,7 +49,7 @@ const { settings } = useVisualizationSettings();
           </div>
 
           <label for="delay">Delay per step (ms)</label>
-          <input id="delay" type="number" min="100" max="1000" v-model.number="settings.delay" />
+          <input id="delay" type="number" min="10" max="1000" v-model.number="settings.delay" />
         </fieldset>
       </form>
     </section>

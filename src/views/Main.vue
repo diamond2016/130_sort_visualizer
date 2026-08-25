@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, onUnmounted } from "vue";
 import { bubbleSort } from "#/utils/bubblesort";
+import { isSorted } from "#/utils/validator";
 import { SortGenerator, SortingState } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
@@ -31,6 +32,40 @@ const statusMessage = ref<string>("")
 const comparisons = ref<number>(0)
 const swaps = ref<number>(0)
 const writes = ref<number>(0)
+
+// Timer state
+const elapsedTime = ref<number>(0);
+let accumulatedTime = 0;
+let startTime = 0;
+let timerInterval: number | null = null;
+
+function startTimer() {
+  if (timerInterval !== null) return;
+  startTime = performance.now();
+  timerInterval = window.setInterval(() => {
+    const current = performance.now();
+    elapsedTime.value = (accumulatedTime + (current - startTime)) / 1000;
+  }, 50);
+}
+
+function stopTimer() {
+  if (timerInterval !== null) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    const current = performance.now();
+    accumulatedTime += current - startTime;
+    elapsedTime.value = accumulatedTime / 1000;
+  }
+}
+
+function resetTimer() {
+  if (timerInterval !== null) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  accumulatedTime = 0;
+  elapsedTime.value = 0;
+}
 
 // --- Helpers ---
 const createRandomArray = (): number[] =>
@@ -98,8 +133,15 @@ async function step() {
   } else {
     running.value = false
     sortingState.value = 'finished'
+    stopTimer();
     draw(arrayRef.value);
-    console.log('Statistiche finali:', result.value)
+    
+    const valid = isSorted(arrayRef.value);
+    if (valid) {
+      statusMessage.value = "Sorted Successfully!";
+    } else {
+      statusMessage.value = "Error: Array is not sorted!";
+    }
   }
 }
 
@@ -160,9 +202,11 @@ function onWrite(indices: number[]) {
 // start
 async function start() {
   if (!canStart.value) return
+  resetTimer();
   running.value = true
   sortingState.value = 'running'
   statusMessage.value = "" 
+  startTimer();
   gen.value = bubbleSort(arrayRef.value)
   while (running.value) {
     await step() // animate
@@ -174,6 +218,7 @@ function pause() {
   if (!canPause.value) return
   running.value = false
   sortingState.value = 'paused'
+  stopTimer();
 }
 
 // resume
@@ -181,6 +226,7 @@ async function resume() {
   if (!canResume.value) return
   running.value = true
   sortingState.value = 'running'
+  startTimer();
   while (running.value) {
     await step() // animate
   }
@@ -191,6 +237,7 @@ function reset() {
   running.value = false
   sortingState.value = 'idle'
   gen.value = null
+  resetTimer();
   arrayRef.value = [...originalArray]
   draw(arrayRef.value)
   comparing.value = []
@@ -208,6 +255,10 @@ onMounted(() => {
   originalArray = [...arrayRef.value]
   draw(arrayRef.value);
 })
+
+onUnmounted(() => {
+  resetTimer();
+});
 
 </script>
 
@@ -257,6 +308,7 @@ onMounted(() => {
       :comparisons="comparisons" 
       :swaps="swaps" 
       :writes="writes"
+      :elapsedTime="elapsedTime"
       :statusMessage="statusMessage" 
     />
   </main>

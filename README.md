@@ -69,6 +69,11 @@ Make sure your controls remain responsive at all speeds. At the fastest preset, 
 
 Testing: Start a run, pause it half-way through, and confirm the bars freeze in place with the comparison/swap highlights still visible. Resume and confirm it picks up from where it left off. Hit restart and confirm the array goes back to its original state and the stats reset to zero. Use the step control to advance one operation at a time and watch the comparison/swap highlights move with each press. Try the fast preset and confirm pause still responds promptly.
 
+
+**implementation at step3**:
+![implementatiion of step3](step3.png)
+Note: the most important change is the state of buttons aligned with events of generatir.
+
 ## Step 4
 In this step your goal is to refactor bubble sort behind a clean algorithm interface, then add two more algorithms.
 

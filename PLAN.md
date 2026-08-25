@@ -74,11 +74,14 @@ Update your bubble sort so that the right indices are highlighted at the right m
 - Display clear success message ("Sorted Successfully!") or error message ("Error: Array is not sorted") in `Statistics.vue`.
 
 ### Implementation Checklist
-1. [ ] Create `src/utils/validator.ts` and unit test `tests/validator.test.ts`.
-2. [ ] Update `useVisualizationSettings.ts` for reactive speed preset and delay synchronization.
-3. [ ] Update `Statistics.vue` to accept `elapsedTime` prop and render timer.
+1. [x] Create `src/utils/validator.ts` and unit test `tests/validator.test.ts`.
+2. [x] Update `useVisualizationSettings.ts` for reactive speed preset and delay synchronization.
+3. [x] Update `Statistics.vue` to accept `elapsedTime` prop and render timer.
 4. [x] Refactor `Main.vue` animation loop with state machine (`idle`/`running`/`paused`/`finished`), responsive pause, step action, and highlight preservation.
-5. [ ] Verify playback controls, speed slider/presets, timer, and correctness validation end-to-end.
+5. [x] Verify playback controls, speed slider/presets, timer, and correctness validation end-to-end.
+
+## Step 3 complete
+
 
 
 
