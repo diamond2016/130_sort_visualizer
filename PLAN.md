@@ -42,5 +42,43 @@ Update your bubble sort so that the right indices are highlighted at the right m
 ### Implementation
 1.  modify the swap(), to highlight swapping, refactor to avoid duplications. OK
 1.  implement write and comparisons color OK
-1.  implement step 2
+1.  implement step 2 ok
+
+
+## Step 3: Playback Controls and Configurable Speed
+
+**Goal**: Implement comprehensive playback controls (Start, Pause, Resume, Reset, Step) and configurable speed settings (presets: Slow, Medium, Fast, plus custom step delay), live wall-clock time measurement, highlight preservation when paused, and array correctness validation on completion.
+
+### 1. State Machine & Controller Refactoring (`Main.vue`)
+- Introduce explicit `PlaybackState`: `'idle' | 'running' | 'paused' | 'finished'`.
+- Define button states:
+  - **Start**: Active when `idle` or `finished`. Initializes array/generator and starts animation loop.
+  - **Pause**: Active when `running`. Pauses execution loop without clearing highlights.
+  - **Resume**: Active when `paused`. Continues animation loop from current generator state.
+  - **Reset**: Active anytime. Resets array to original state, clears highlights, resets stats and timer.
+  - **Step**: Active when `idle` or `paused`. Executes a single generator step, updates stats and highlights, and stays `paused`.
+- Retain highlights (yellow for comparison, red for swap, green for write) when paused so visual state is preserved.
+
+### 2. Configurable Speed Controller (`useVisualizationSettings.ts` & `VisualizationControl.vue`)
+- Connect speed presets (`slow`: 400ms, `medium`: 150ms, `fast`: 20ms) with `settings.delay` input.
+- Dynamically read `settings.delay` inside the animation loop sleep function so speed adjustments take effect instantly during playback without restarting.
+
+### 3. Statistics & Wall-Clock Timer (`Statistics.vue` & `Main.vue`)
+- Add live wall-clock timer (`elapsedTime`) in `Main.vue` using `performance.now()`.
+- Pass `elapsedTime` to `Statistics.vue` and display formatted output (e.g., `0.00s`).
+- Pause timer when `paused` or `finished`; reset to `0.00s` on `Reset`.
+
+### 4. Array Correctness Validation (`utils/validator.ts`)
+- Create `isSorted(arr: number[]): boolean` helper function.
+- Validate array when generator finishes (`done === true`).
+- Display clear success message ("Sorted Successfully!") or error message ("Error: Array is not sorted") in `Statistics.vue`.
+
+### Implementation Checklist
+1. [ ] Create `src/utils/validator.ts` and unit test `tests/validator.test.ts`.
+2. [ ] Update `useVisualizationSettings.ts` for reactive speed preset and delay synchronization.
+3. [ ] Update `Statistics.vue` to accept `elapsedTime` prop and render timer.
+4. [ ] Refactor `Main.vue` animation loop with state machine (`idle`/`running`/`paused`/`finished`), responsive pause, step action, and highlight preservation.
+5. [ ] Verify playback controls, speed slider/presets, timer, and correctness validation end-to-end.
+
+
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { bubbleSort } from "#/utils/bubblesort";
-import { SortGenerator, SortedReturnResult, GraphContext } from "#/models/sorter";
+import { SortGenerator, SortingState } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
@@ -11,9 +11,14 @@ const { settings } = useVisualizationSettings();
 // --- State / Reactive state ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
-const speedTime = 400; 
+const sortingState = ref<SortingState>('idle');
 
-let pauseState = false
+const canStart = computed(() => sortingState.value === 'idle');
+const canPause = computed(() => sortingState.value === 'running');
+const canResume = computed(() => sortingState.value === 'paused');
+const canStep = computed(() =>
+  sortingState.value === 'idle' || sortingState.value === 'paused'
+);
 
 const arrayRef = ref<number[]>([])
 let originalArray: number[] = []
@@ -70,6 +75,11 @@ const draw = (array: number[]) => {
 // --- Core Logic ---
 // step: single pass 
 async function step() {
+  if (sortingState.value === 'idle') {
+    gen.value = bubbleSort(arrayRef.value)
+    sortingState.value = 'paused'
+    statusMessage.value = ""
+  }
   if (!gen.value) return
 
   const result = await gen.value.next()
@@ -81,11 +91,12 @@ async function step() {
     if (type === 'swap') onSwap(indices)
     if (type === 'write') onWrite(indices)
     
-    await sleep(speedTime)
+    await sleep(settings.delay)
     draw(arrayRef.value); // returnsa to "rest" color of bars in evidence 
   
   } else {
     running.value = false
+    sortingState.value = 'finished'
     draw(arrayRef.value);
     console.log('Statistiche finali:', result.value)
   }
@@ -147,7 +158,9 @@ function onWrite(indices: number[]) {
 // Commands: 1. start, 2. pause 3. resume 4. restart 5. step.
 // start
 async function start() {
+  if (!canStart.value) return
   running.value = true
+  sortingState.value = 'running'
   statusMessage.value = "" 
   gen.value = bubbleSort(arrayRef.value)
   while (running.value) {
@@ -157,12 +170,16 @@ async function start() {
 
 // pause
 function pause() {
+  if (!canPause.value) return
   running.value = false
+  sortingState.value = 'paused'
 }
 
 // resume
 async function resume() {
+  if (!canResume.value) return
   running.value = true
+  sortingState.value = 'running'
   while (running.value) {
     await step() // animate
   }
@@ -171,6 +188,8 @@ async function resume() {
 // reset
 function reset() {
   running.value = false
+  sortingState.value = 'idle'
+  gen.value = null
   arrayRef.value = [...originalArray]
   draw(arrayRef.value)
   comparing.value = []
@@ -216,11 +235,11 @@ onMounted(() => {
     <section class="panel" aria-labelledby="playback-heading">
       <h3 id="playback-heading">Playback Controls</h3>
       <nav class="button-group" aria-label="Playback controls">
-        <button type="button" @click="start()">Start</button>
-        <button type="button" @click="pause()">Pause</button>
-        <button type="button" @click="resume()">Resume</button>
+        <button type="button" :disabled="!canStart" @click="start()">Start</button>
+        <button type="button" :disabled="!canPause" @click="pause()">Pause</button>
+        <button type="button" :disabled="!canResume" @click="resume()">Resume</button>
         <button type="button" @click="reset()">Reset</button>
-        <button type="button" @click="step()">Step</button>
+        <button type="button" :disabled="!canStep" @click="step()">Step</button>
       </nav>
     </section>
     </div>
