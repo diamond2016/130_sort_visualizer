@@ -49,7 +49,7 @@ Update your bubble sort so that the right indices are highlighted at the right m
 
 **Goal**: Implement comprehensive playback controls (Start, Pause, Resume, Reset, Step) and configurable speed settings (presets: Slow, Medium, Fast, plus custom step delay), live wall-clock time measurement, highlight preservation when paused, and array correctness validation on completion.
 
-### 1. State Machine & Controller Refactoring (`Main.vue`)
+### 1. State Machine & Controller Refactoring (`Main.vue`) - DONE
 - Introduce explicit `PlaybackState`: `'idle' | 'running' | 'paused' | 'finished'`.
 - Define button states:
   - **Start**: Active when `idle` or `finished`. Initializes array/generator and starts animation loop.
@@ -77,7 +77,7 @@ Update your bubble sort so that the right indices are highlighted at the right m
 1. [ ] Create `src/utils/validator.ts` and unit test `tests/validator.test.ts`.
 2. [ ] Update `useVisualizationSettings.ts` for reactive speed preset and delay synchronization.
 3. [ ] Update `Statistics.vue` to accept `elapsedTime` prop and render timer.
-4. [ ] Refactor `Main.vue` animation loop with state machine (`idle`/`running`/`paused`/`finished`), responsive pause, step action, and highlight preservation.
+4. [x] Refactor `Main.vue` animation loop with state machine (`idle`/`running`/`paused`/`finished`), responsive pause, step action, and highlight preservation.
 5. [ ] Verify playback controls, speed slider/presets, timer, and correctness validation end-to-end.
 
 

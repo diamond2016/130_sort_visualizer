@@ -82,6 +82,8 @@ async function step() {
   }
   if (!gen.value) return
 
+  // Clear the previous event only when advancing to the next event.
+  draw(arrayRef.value)
   const result = await gen.value.next()
 
   if (!result.done) {
@@ -92,7 +94,6 @@ async function step() {
     if (type === 'write') onWrite(indices)
     
     await sleep(settings.delay)
-    draw(arrayRef.value); // returnsa to "rest" color of bars in evidence 
   
   } else {
     running.value = false
