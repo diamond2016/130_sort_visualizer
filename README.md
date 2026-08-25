@@ -72,7 +72,7 @@ Testing: Start a run, pause it half-way through, and confirm the bars freeze in 
 
 **implementation at step3**:
 ![implementatiion of step3](step3.png)
-Note: the most important change is the state of buttons aligned with events of generatir.
+Note: the most important change is the state of buttons aligned with events of generator (in sorting).
 
 ## Step 4
 In this step your goal is to refactor bubble sort behind a clean algorithm interface, then add two more algorithms.
