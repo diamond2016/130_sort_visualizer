@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, onUnmounted, watch } from "vue";
-import { bubbleSort } from "#/utils/bubblesort";
+
 import { isSorted } from "#/utils/validator";
 import { SortGenerator, SortingState, SortingAlgorithm } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
+
+import { bubbleSort } from "#/utils/bubblesort";
+import { insertionSort } from "#/utils/insertionsort";
+import { selectionSort } from "#/utils/selectionsort";
 
 const { settings } = useVisualizationSettings();
 
@@ -13,13 +17,23 @@ const { settings } = useVisualizationSettings();
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 const maxValue = 100;
 const sortingState = ref<SortingState>('idle');
-const sortingAlgorithm = ref<SortingAlgorithm>('bubbleSort')
 const canStart = computed(() => sortingState.value === 'idle');
 const canPause = computed(() => sortingState.value === 'running');
 const canResume = computed(() => sortingState.value === 'paused');
 const canStep = computed(() =>
   sortingState.value === 'idle' || sortingState.value === 'paused'
 );
+
+const algorithms: SortingAlgorithm[] = [
+  { name: 'Bubble Sort', impl: bubbleSort },
+  { name: 'Insertion Sort', impl: insertionSort },
+  { name: 'Selection Sort', impl: selectionSort },
+  { name: 'Merge Sort', impl: mergeSort },
+  { name: 'Quick Sort', impl: quickSort },
+  { name: 'Heap Sort', impl: heapSort },
+  { name: 'Shell Sort', impl: shellSort },
+  { name: 'Radix Sort', impl: radixSort }
+];
 
 const arrayRef = ref<number[]>([])
 let originalArray: number[] = []
