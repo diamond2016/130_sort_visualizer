@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, onUnmounted, watch } from "vue";
 
 import { isSorted } from "#/utils/validator";
-import { SortGenerator, SortingState, SortingAlgorithm } from "#/models/sorter";
+import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
@@ -10,6 +10,11 @@ import { useVisualizationSettings } from "#/composables/useVisualizationSettings
 import { bubbleSort } from "#/utils/bubblesort";
 import { insertionSort } from "#/utils/insertionsort";
 import { selectionSort } from "#/utils/selectionsort";
+import { mergeSort } from "#/utils/mergesort";
+import { quickSort } from "#/utils/quicksort";
+import { heapSort } from "#/utils/heapsort";
+import { shellSort } from "#/utils/shellsort";
+import { radixSort } from "#/utils/radixsort";
 
 const { settings } = useVisualizationSettings();
 
@@ -24,6 +29,8 @@ const canStep = computed(() =>
   sortingState.value === 'idle' || sortingState.value === 'paused'
 );
 
+const sortingAlgorithm = ref<string>('Bubble Sort');
+
 const algorithms: SortingAlgorithm[] = [
   { name: 'Bubble Sort', impl: bubbleSort },
   { name: 'Insertion Sort', impl: insertionSort },
@@ -34,6 +41,11 @@ const algorithms: SortingAlgorithm[] = [
   { name: 'Shell Sort', impl: shellSort },
   { name: 'Radix Sort', impl: radixSort }
 ];
+
+const sorter = computed<SortingAlgorithmFn>(() => {
+  const algo = algorithms.find(a => a.name === sortingAlgorithm.value);
+  return algo ? algo.impl : bubbleSort;
+});
 
 const arrayRef = ref<number[]>([])
 let originalArray: number[] = []
@@ -85,12 +97,6 @@ function resetTimer() {
 const createRandomArray = (): number[] =>
   Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
 
-watch(
-  () => sortingAlgorithm,
-  (newAlgorithm) => {
-    console.log(newAlgorithm)
-})
-
 /**
  * Helper to draw a single bar on the canvas.
  */
@@ -131,7 +137,7 @@ const draw = (array: number[]) => {
 // step: single pass 
 async function step() {
   if (sortingState.value === 'idle') {
-    gen.value = bubbleSort(arrayRef.value)
+    gen.value = sorter.value(arrayRef.value)
     sortingState.value = 'paused'
     statusMessage.value = ""
   }
@@ -227,7 +233,7 @@ async function start() {
   sortingState.value = 'running'
   statusMessage.value = "" 
   startTimer();
-  gen.value = bubbleSort(arrayRef.value)
+  gen.value = sorter.value(arrayRef.value)
   while (running.value) {
     await step() // animate
   }
@@ -294,14 +300,9 @@ onUnmounted(() => {
         <form @submit.prevent>
           <label for="algorithm-select">Algorithm:&nbsp;</label>
           <select id="algorithm-select" v-model="sortingAlgorithm">
-            <option value="bubbleSort">Bubble Sort</option>
-            <option value="insertionSort">Insertion Sort</option>
-            <option value="selectionSort">Selection Sort</option>
-            <option value="mergeSort">Merge Sort</option>
-            <option value="quickSort">Quick Sort</option>
-            <option value="heapSort">Heap Sort</option>
-            <option value="shellSort">Shell Sort</option>
-            <option value="radixSort">Radix Sort</option>
+            <option v-for="algo in algorithms" :key="algo.name" :value="algo.name">
+              {{ algo.name }}
+            </option>
           </select>
         </form>
       </nav>
