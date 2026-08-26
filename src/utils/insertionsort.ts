@@ -32,6 +32,25 @@
  */
 
 import { SortGenerator } from '#/models/sorter'
+export function insertionSortFunction(array: number[]): void {
+    if (array.length <= 1)
+        return
+
+    for (let index = 1; index < array.length; index++) {
+        const key = array[index]
+        let j = index - 1
+        /* Move elements of arr[0..i-1], that are
+           greater than key, to one position ahead
+           of their current position */
+        while ((j >= 0) && (array[j] > key)) {
+            array[j + 1] = array[j]
+            j = j -1
+        }
+        array[j + 1] = key
+    }
+}
+
+
 // version of insertionsort as Generator. Note the async. Returns Generator object (Iterator)
 export async function* insertionSort(
       array: number[]
@@ -43,7 +62,7 @@ export async function* insertionSort(
 
     for (let index = 1; index < array.length; index++) {
         const key = array[index]
-        const j = index - 1
+        let j = index - 1
         /* Move elements of arr[0..i-1], that are
            greater than key, to one position ahead
            of their current position */
