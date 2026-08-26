@@ -85,6 +85,10 @@ With the interface in place, add insertion sort and selection sort. Each one sho
 
 Testing: Run each of the three algorithms on the same input and compare. Bubble sort should swap adjacent elements; insertion sort should sweep one element at a time into its correct place in the sorted prefix; selection sort should make far fewer swaps but lots of comparisons. The stats counters should reflect the differences, selection sort, for example, will show roughly the same number of comparisons as bubble sort but far fewer writes.
 
+**implementation at step4**:
+![implementatiion of step4](step4.png)
+Note: the most important change is having now an array of functions to call, one per algorithm, and having a dynamic selection in Main.vue for algo type to run. Controle like "step" ara availible.
+
 ## Step 5
 In this step your goal is to add merge sort, quick sort, and heap sort.
 
