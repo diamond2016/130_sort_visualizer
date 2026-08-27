@@ -87,7 +87,7 @@ Testing: Run each of the three algorithms on the same input and compare. Bubble 
 
 **implementation at step4**:
 ![implementatiion of step4](step4.png)
-Note: the most important change is having now an array of functions to call, one per algorithm, and having a dynamic selection in Main.vue for algo type to run. Controle like "step" ara availible.
+Note: the most important change is about use of an array of functions, one per algorithm, and having a dynamic selection in Main.vue for algo type to run. Controls like "step" are availible.
 
 ## Step 5
 In this step your goal is to add merge sort, quick sort, and heap sort.
