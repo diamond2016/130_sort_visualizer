@@ -275,6 +275,33 @@ function reset() {
   writes.value = 0
 }
 
+watch(
+  () => settings.maxSamples,
+  (newSize) => {
+    if (newSize <= 0) {
+      arrayRef.value = [];
+      originalArray = [];
+      draw(arrayRef.value);
+      return;
+    }
+
+    arrayRef.value = createRandomArray();
+    originalArray = [...arrayRef.value]
+    draw(arrayRef.value)
+
+    if (sortingState.value !== 'running') {
+      comparing.value = []
+      swapping.value = []
+      writing.value = []
+      comparisons.value = 0
+      swaps.value = 0
+      writes.value = 0
+      statusMessage.value = 'press Start'
+      sortingState.value = 'idle'
+      gen.value = null
+    }
+  }
+)
 
 onMounted(() => {
   arrayRef.value = createRandomArray();
