@@ -98,6 +98,9 @@ A small word on merge sort: because it uses an auxiliary array, you’ll need to
 
 Testing: Run each of the three algorithms and watch them. Merge sort should produce the classic “halves coming back together” pattern. Quick sort should show pivots being placed and partitions taking shape. Heap sort should show a chaotic phase (heap construction) followed by an orderly phase (extracting the max from the back of the array). Confirm the correctness check from Step 2 passes for all three on a variety of input sizes.
 
+**implementation at step 5**
+Same rules as for step4. Following `PROJECT-GUIDELINES.md` for coherence in code.
+
 ## Step 6
 In this step your goal is to add shell sort and radix sort.
 
