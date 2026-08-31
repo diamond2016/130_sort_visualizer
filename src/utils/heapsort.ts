@@ -29,7 +29,7 @@
  * - Space Complexity: O(1) (in-place)
  */
 
-import { SortGenerator } from '#/models/sorter'
+import { SortGenerator, SortedYieldResult } from '#/models/sorter'
 
 export function heapSortFunction(array: number[]): void {
     if (array.length <= 1) return;
@@ -81,7 +81,7 @@ export async function* heapSort(
     return { comps, swaps };
   }
 
-  const siftDownAsync = async function* (arr: number[], i: number, length: number) {
+  async function* siftDownAsync(arr: number[], i: number, length: number): AsyncGenerator<SortedYieldResult, void, void> {
     let current = i;
     while (true) {
       let largest = current;
@@ -115,7 +115,7 @@ export async function* heapSort(
         break;
       }
     }
-  };
+  }
 
   // Build max heap
   for (let i = Math.floor(array.length / 2) - 1; i >= 0; i--) {
