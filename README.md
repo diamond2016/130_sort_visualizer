@@ -108,6 +108,9 @@ Radix sort is the odd one out. It’s not comparison-based, it sorts by repeated
 
 Testing: Run shell sort and watch how the array goes from chaotic to “fairly ordered” to fully sorted as the gap shrinks. Run radix sort on a fixed-width integer array and confirm it sorts correctly. Compare radix sort’s stats counters to the comparison sorts, radix sort should have zero comparisons (or very few, depending on how you count) and a number of writes proportional to the number of digits times the array size.
 
+**implementation at step 6**
+Same rules as for step4-5. radix sort is a new kind of algorithm and does not use swap and comps.
+
 ## Step 7
 In this step your goal is to add the numbers display mode behind a pluggable rendering interface.
 
