@@ -15,7 +15,7 @@ const { settings } = useVisualizationSettings();
           <label for="display-mode">Display</label>
           <select id="display-mode" v-model="settings.displayMode">
             <option value="bars">Bars</option>
-            <option value="dots">Dots</option>
+            <option value="numbers">Numbers</option>
           </select>
 
           <label for="order-mode">Sample order</label>
