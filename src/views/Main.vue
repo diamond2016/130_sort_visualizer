@@ -2,12 +2,19 @@
 import { computed, onMounted, ref, onUnmounted, watch } from "vue";
 
 import { isSorted } from "#/utils/validator";
-import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn } from "#/models/sorter";
+import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn, SortedYieldResult } from "#/models/sorter";
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
-import { MAX_VALUE } from '#/models/renderer'
+
+
+// --- rendering ---
+import { Renderer, MAX_VALUE } from '#/models/renderer'
 import { barsRenderer } from '#/renderers/bars'
+import { numbersRenderer } from '#/renderers/numbers'
+const renderer = computed<Renderer>(() =>
+  settings.displayMode === 'numbers' ? numbersRenderer : barsRenderer
+);
 
 import { bubbleSort } from "#/utils/bubblesort";
 import { insertionSort } from "#/utils/insertionsort";
@@ -29,10 +36,10 @@ const canPause = computed(() => sortingState.value === 'running');
 const canResume = computed(() => sortingState.value === 'paused');
 const canStep = computed(() =>
   sortingState.value === 'idle' || sortingState.value === 'paused'
-);
+)
 
+// --- Sorting ---
 const sortingAlgorithm = ref<string>('Bubble Sort');
-
 const algorithms: SortingAlgorithm[] = [
   { name: 'Bubble Sort', impl: bubbleSort },
   { name: 'Insertion Sort', impl: insertionSort },
@@ -43,7 +50,6 @@ const algorithms: SortingAlgorithm[] = [
   { name: 'Shell Sort', impl: shellSort },
   { name: 'Radix Sort', impl: radixSort }
 ];
-
 const sorter = computed<SortingAlgorithmFn>(() => {
   const algo = algorithms.find(a => a.name === sortingAlgorithm.value);
   return algo ? algo.impl : bubbleSort;
@@ -97,9 +103,45 @@ function resetTimer() {
 
 // --- Helpers ---
 const createRandomArray = (): number[] =>
-  Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
+  Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue))
+)
 
+const getCanvas = (): HTMLCanvasElement | null => {
+  const canvas = canvasRef.value;
+  if (!canvas) return null;
+  return canvas
+}
 
+const getBarWidth = (): number | null => {
+  const canvas = getCanvas()
+  if (!canvas)
+    return null
+  return canvas.width / arrayRef.value.length
+}
+
+const getCtx = (): CanvasRenderingContext2D | null => {
+  const canvas = canvasRef.value;
+  if (!canvas) return null;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  return ctx  
+}
+
+const drawRest = () => {
+  const canvas = canvasRef.value;
+  if (!canvas) return
+  const ctx = getCtx()
+  if (!ctx) return
+  renderer.value.drawResting(arrayRef.value, canvas, ctx)
+}
+
+const drawEvent = (event: SortedYieldResult) => {
+  const canvas = canvasRef.value;
+  if (!canvas) return
+  const ctx = getCtx()
+  if (!ctx) return
+  renderer.value.drawEvent(arrayRef.value, event, canvas, ctx)
+}
 
 
 // --- Core Logic ---
@@ -113,7 +155,7 @@ async function step() {
   if (!gen.value) return
 
   // Clear the previous event only when advancing to the next event.
-  draw(arrayRef.value)
+  drawRest()
   const result = await gen.value.next()
 
   if (!result.done) {
@@ -129,7 +171,7 @@ async function step() {
     running.value = false
     sortingState.value = 'finished'
     stopTimer();
-    draw(arrayRef.value);
+    drawRest()
     
     const valid = isSorted(arrayRef.value);
     if (valid) {
@@ -148,14 +190,12 @@ function onCompare(indices: number[]) {
   comparisons.value++
   statusMessage.value = `Comparing: ${indices}`
   
-  const canvas = canvasRef.value
-  if (!canvas) return
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  const barWidth = canvas.width / arrayRef.value.length
+  const barWidth = getBarWidth()
+  const compareEvent: SortedYieldResult = {
+  'type': 'compare', 'indices': indices 
+  }
   indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'yellow');
+    drawEvent(compareEvent);
   })
 }
 
@@ -164,13 +204,13 @@ function onSwap(indices: number[]) {
   swapping.value = indices
   swaps.value++
   statusMessage.value = `Swapping: ${indices}`
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  const barWidth = canvas.width / arrayRef.value.length;
+
+  const barWidth = getBarWidth()
+  const compareEvent: SortedYieldResult = {
+  'type': 'swap', 'indices': indices 
+  }
   indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'red');
+    drawEvent(compareEvent);
   })
 }
 
@@ -179,15 +219,14 @@ function onWrite(indices: number[]) {
   writing.value = indices
   writes.value++
   statusMessage.value = `Writing: ${indices}`
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  const barWidth = canvas.width / arrayRef.value.length;
 
+  const barWidth = getBarWidth()
   writing.value.push(indices[0])
-   indices.forEach((index) => {
-    drawBar(ctx, canvas, index, arrayRef.value[index], barWidth, 'green');
+  const compareEvent: SortedYieldResult = {
+  'type': 'write', 'indices': indices 
+  }
+  indices.forEach((index) => {
+    drawEvent(compareEvent);
   })
 }
 
@@ -234,7 +273,7 @@ function reset() {
   gen.value = null
   resetTimer();
   arrayRef.value = [...originalArray]
-  draw(arrayRef.value)
+  drawRest()
   comparing.value = []
   swapping.value = []
   writing.value = []
@@ -250,13 +289,12 @@ watch(
     if (newSize <= 0) {
       arrayRef.value = [];
       originalArray = [];
-      draw(arrayRef.value);
-      return;
+      drawRest()
     }
 
     arrayRef.value = createRandomArray();
     originalArray = [...arrayRef.value]
-    draw(arrayRef.value)
+    drawRest()
 
     if (sortingState.value !== 'running') {
       comparing.value = []
@@ -275,7 +313,7 @@ watch(
 onMounted(() => {
   arrayRef.value = createRandomArray();
   originalArray = [...arrayRef.value]
-  draw(arrayRef.value);
+  drawRest()
 })
 
 onUnmounted(() => {
