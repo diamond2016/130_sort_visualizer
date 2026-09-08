@@ -1,6 +1,6 @@
 import { reactive, watch } from "vue";
 
-export type DisplayMode = "bars" | "dots";
+export type DisplayMode = "bars" | "numbers";
 export type OrderMode = "random" | "increasing" | "decreasing";
 export type SpeedMode = "slow" | "medium" | "fast";
 

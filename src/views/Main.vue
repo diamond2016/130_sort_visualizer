@@ -6,6 +6,8 @@ import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn } fro
 import { sleep } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
+import { MAX_VALUE } from '#/models/renderer'
+import { barsRenderer } from '#/renderers/bars'
 
 import { bubbleSort } from "#/utils/bubblesort";
 import { insertionSort } from "#/utils/insertionsort";
@@ -20,7 +22,7 @@ const { settings } = useVisualizationSettings();
 
 // --- State / Reactive state ---
 const canvasRef = ref<HTMLCanvasElement | null>(null);
-const maxValue = 100;
+const maxValue = MAX_VALUE;
 const sortingState = ref<SortingState>('idle');
 const canStart = computed(() => sortingState.value === 'idle');
 const canPause = computed(() => sortingState.value === 'running');
@@ -97,39 +99,6 @@ function resetTimer() {
 const createRandomArray = (): number[] =>
   Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue)));
 
-/**
- * Helper to draw a single bar on the canvas.
- */
-const drawBar = (
-  ctx: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement,
-  index: number,
-  value: number,
-  barWidth: number,
-  color: string
-) => {
-  const barHeight = (value / maxValue) * canvas.height;
-  ctx.fillStyle = color;
-  ctx.fillRect(index * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
-};
-
-
-const draw = (array: number[]) => {
-  const canvas = canvasRef.value;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  // 1. Clear the screen
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 2. Draw the bars
-  const barWidth = canvas.width / array.length;
-  
-  array.forEach((value, i) => {
-    drawBar(ctx, canvas, i, value, barWidth, 'skyblue');
-  });
-};
 
 
 
