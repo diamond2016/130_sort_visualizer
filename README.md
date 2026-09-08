@@ -122,6 +122,10 @@ Add a display mode selector to your UI so the user can switch between bars and n
 
 Testing: Run each of your eight algorithms in numbers mode and confirm the lift behaviour matches what you expect, when bubble sort compares two adjacent elements, those two tiles should lift; when it swaps them, both should be highlighted in the swap colour. Switch between bars and numbers mid-run if you can; the algorithm should keep running and just the rendering should change.
 
+**implementation at step 7**:
+![implementatiion of step 7](step7.png)
+This is really a milestone. In step 7 a `renderer` is used to display result of sorting, either for bars than numbers. The new "tile" and "lift" approach for numbers is implemented.
+
 ## Step 8
 In this step your goal is to add sample size and sample order configuration, polish the user experience, and finish the documentation.
 
