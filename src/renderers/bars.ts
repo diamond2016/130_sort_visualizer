@@ -1,10 +1,21 @@
-import { Renderer } from '#/models/renderer' 
+import { Renderer, MAX_VALUE } from '#/models/renderer'
 import { SortedYieldResult } from '#/models/sorter';
 
-const maxValue = 100;
+/**
+ * The maximum value used to scale bar heights to the canvas.
+ * A bar with value `v` is drawn at height `(v / maxValue) * canvas.height`.
+ */
+const maxValue = MAX_VALUE;
 
 /**
  * Helper to draw a single bar on the canvas.
+ *
+ * @param ctx - The 2D rendering context to draw on.
+ * @param canvas - The canvas element (used for dimensions).
+ * @param index - The zero-based position of the bar in the array.
+ * @param value - The numeric value of the element at `index`.
+ * @param barWidth - The pixel width allocated to each bar.
+ * @param color - The CSS colour to fill the bar with.
  */
 const drawBar = (
   ctx: CanvasRenderingContext2D,
@@ -19,6 +30,10 @@ const drawBar = (
   ctx.fillRect(index * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
 };
 
+/**
+ * Draw the array in its resting state: clear the canvas, then render every
+ * bar in the resting colour (`skyblue`) using the `maxValue` scaling.
+ */
 const drawResting = (array: number[], canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const barWidth = canvas.width / array.length;
@@ -27,6 +42,12 @@ const drawResting = (array: number[], canvas: HTMLCanvasElement, ctx: CanvasRend
   });
 };
 
+/**
+ * Draw a single algorithm event: clear the canvas, render all bars in the
+ * resting colour (`skyblue`), then redraw the event's `indices` in the
+ * colour that matches the event type — `yellow` for compare, `red` for
+ * swap, `green` for write.
+ */
 const drawEvent = (array: number[], event: SortedYieldResult, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const barWidth = canvas.width / array.length;
@@ -39,10 +60,17 @@ const drawEvent = (array: number[], event: SortedYieldResult, canvas: HTMLCanvas
   });
 };
 
+/**
+ * Clear the canvas back to a blank frame.
+ */
 const clear = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): void => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
+/**
+ * The bars renderer — implements the {@link Renderer} interface by drawing
+ * the array as a row of vertical bars.
+ */
 export const barsRenderer: Renderer = {
   drawResting,
   drawEvent,
