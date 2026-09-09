@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
-
+import { MAX_VALUE } from "#/models/renderer";
 const { settings } = useVisualizationSettings();
 </script>
 
@@ -27,8 +27,8 @@ const { settings } = useVisualizationSettings();
 
           <label for="sample-size">Sample size</label>
           <select id="sample-size" v-model.number="settings.maxSamples">
-            <option v-for="n in 50" :key="n" :value="n">
-              {{ n }}
+            <option v-for="n in MAX_VALUE / 5" :key="n" :value="n * 5">
+              {{ n * 5 }}
             </option>
           </select>
 
@@ -55,6 +55,7 @@ const { settings } = useVisualizationSettings();
     </section>
   </aside>
 </template>
+
 <style scoped>
 .sidebar {
   display: flex;

@@ -3,7 +3,8 @@ import { computed, onMounted, ref, onUnmounted, watch } from "vue";
 
 import { isSorted } from "#/utils/validator";
 import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn, SortedYieldResult } from "#/models/sorter";
-import { sleep, createRandomArray } from '#/utils/helper'
+import { sleep } from '#/utils/helper'
+import { generateSample } from "#/utils/sample";
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
 
@@ -102,6 +103,30 @@ function resetTimer() {
 }
 
 // --- Helpers ---
+
+const createConfiguredSample = (): number[] =>
+  generateSample(settings.maxSamples, maxValue, settings.orderMode);
+
+function resetStatistics() {
+  comparisons.value = 0;
+  swaps.value = 0;
+  writes.value = 0;
+  elapsedTime.value = 0;
+}
+
+function regenerateSample() {
+  arrayRef.value = createConfiguredSample();
+  originalArray = [...arrayRef.value];
+  gen.value = null;
+  resetTimer();
+  resetStatistics();
+  comparing.value = [];
+  swapping.value = [];
+  writing.value = [];
+  statusMessage.value = "press Start";
+  sortingState.value = "idle";
+  drawRest();
+}
 
 
 const getCanvas = (): HTMLCanvasElement | null => {
@@ -234,6 +259,7 @@ function onWrite(indices: number[]) {
 // start
 async function start() {
   if (!canStart.value) return
+  regenerateSample();
   resetTimer();
   running.value = true
   sortingState.value = 'running'
@@ -267,51 +293,21 @@ async function resume() {
 // reset
 function reset() {
   running.value = false
-  sortingState.value = 'idle'
   gen.value = null
-  resetTimer();
-  arrayRef.value = [...originalArray]
-  drawRest()
-  comparing.value = []
-  swapping.value = []
-  writing.value = []
-  statusMessage.value = "press Start" 
-  comparisons.value = 0
-  swaps.value = 0
-  writes.value = 0
+  regenerateSample()
 }
 
 watch(
-  () => settings.maxSamples,
-  (newSize) => {
-    if (newSize <= 0) {
-      arrayRef.value = [];
-      originalArray = [];
-      drawRest()
-    }
-
-    arrayRef.value = createRandomArray(settings.maxSamples, maxValue);
-    originalArray = [...arrayRef.value]
-    drawRest()
-
+  () => [settings.maxSamples, settings.orderMode],
+  () => {
     if (sortingState.value !== 'running') {
-      comparing.value = []
-      swapping.value = []
-      writing.value = []
-      comparisons.value = 0
-      swaps.value = 0
-      writes.value = 0
-      statusMessage.value = 'press Start'
-      sortingState.value = 'idle'
-      gen.value = null
+      regenerateSample();
     }
   }
 )
 
 onMounted(() => {
-  arrayRef.value = createRandomArray(settings.maxSamples, maxValue);;
-  originalArray = [...arrayRef.value]
-  drawRest()
+  regenerateSample();
 })
 
 onUnmounted(() => {

@@ -1,6 +1,5 @@
 import { OrderMode } from "#/models/sorter"
 import { MAX_VALUE } from "#/models/renderer"
-import { createRandomArray } from "./helper";
 
 /**
  * Generates a sample array with the requested size and ordering.
@@ -11,28 +10,25 @@ import { createRandomArray } from "./helper";
  * @param order - The ordering to apply: increasing, decreasing, or random.
  * @returns A generated sample array, or an empty array for invalid input.
  */
-export function generateSample(size: number, order: OrderMode): number[] {
-
-  const compareDecreasing = (a: number, b:number): number => {
-    return (b - a) 
-  }
-  const compareIncreasing = (a: number, b:number): number => {
-    return (a - b) 
-  }
-
+export function generateSample(size: number, maxValue: number, order: OrderMode): number[] {
   if ((size < 5) || (size > MAX_VALUE))
     return []
 
+  const sample = Array.from(
+    { length: size },
+    (_, index) => Math.max(1, Math.round(((index + 1) / size) * maxValue))
+  );
+
   switch (order) {
     case "increasing":
-      return createRandomArray(size, MAX_VALUE).sort(compareIncreasing);
-      break;
+      return sample;
     case "decreasing":
-      return createRandomArray(size, MAX_VALUE).sort(compareDecreasing);
-      break;
+      return sample.reverse();
     case "random":
-      return createRandomArray(size, MAX_VALUE);
-      break;
+      return Array.from(
+        { length: size },
+        () => Math.floor(Math.random() * maxValue) + 1
+      );
     default:
       return []
   }
