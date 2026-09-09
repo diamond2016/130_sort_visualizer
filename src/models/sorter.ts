@@ -18,3 +18,4 @@ export interface SortingAlgorithm {
 }
 
 
+export type OrderMode = "random" | "increasing" | "decreasing"

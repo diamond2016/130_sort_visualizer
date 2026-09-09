@@ -3,7 +3,7 @@ import { computed, onMounted, ref, onUnmounted, watch } from "vue";
 
 import { isSorted } from "#/utils/validator";
 import { SortGenerator, SortingState, SortingAlgorithm, SortingAlgorithmFn, SortedYieldResult } from "#/models/sorter";
-import { sleep } from '#/utils/helper'
+import { sleep, createRandomArray } from '#/utils/helper'
 import Statistics from "#/views/Statistics.vue";
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
 
@@ -102,9 +102,7 @@ function resetTimer() {
 }
 
 // --- Helpers ---
-const createRandomArray = (): number[] =>
-  Array.from({ length: settings.maxSamples }, () => Math.floor(Math.random() * (maxValue))
-)
+
 
 const getCanvas = (): HTMLCanvasElement | null => {
   const canvas = canvasRef.value;
@@ -292,7 +290,7 @@ watch(
       drawRest()
     }
 
-    arrayRef.value = createRandomArray();
+    arrayRef.value = createRandomArray(settings.maxSamples, maxValue);
     originalArray = [...arrayRef.value]
     drawRest()
 
@@ -311,7 +309,7 @@ watch(
 )
 
 onMounted(() => {
-  arrayRef.value = createRandomArray();
+  arrayRef.value = createRandomArray(settings.maxSamples, maxValue);;
   originalArray = [...arrayRef.value]
   drawRest()
 })
