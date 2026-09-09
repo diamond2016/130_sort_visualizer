@@ -134,7 +134,7 @@ Add controls that let the user select the sample size (the number of elements in
 Show the current configuration on screen at all times: the chosen algorithm name, the sample size, the sample order, and the display mode. The user should never have to wonder what they’re looking at.
 
 ![implementatiion of step 8](step8.png)
-At the state of implemtation we have the new panel with config chosen.
+At the state of implementation we have the new panel with config chosen.
 
 When a sort completes, present a clear “sorted” state. A nice touch is a final sweep through the array, a brief animation where each element is briefly highlighted in turn, left to right, to confirm visually that everything is in order. Freeze the final stats so the user can read them.
 
