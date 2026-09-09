@@ -2,6 +2,17 @@
 import { useVisualizationSettings } from "#/composables/useVisualizationSettings";
 import { MAX_VALUE } from "#/models/renderer";
 const { settings } = useVisualizationSettings();
+
+const orderLabels = {
+  random: "Random",
+  increasing: "Increasing",
+  decreasing: "Decreasing",
+} as const;
+
+const displayLabels = {
+  bars: "Bars",
+  numbers: "Numbers",
+} as const;
 </script>
 
 <template>
@@ -53,6 +64,28 @@ const { settings } = useVisualizationSettings();
         </fieldset>
       </form>
     </section>
+
+    <section class="panel summary-panel" aria-labelledby="summary-heading">
+      <h3 id="summary-heading">Current Configuration</h3>
+      <dl class="configuration-summary">
+        <div class="summary-item">
+          <dt>Algorithm</dt>
+          <dd>{{ settings.algorithm }}</dd>
+        </div>
+        <div class="summary-item">
+          <dt>Sample Size</dt>
+          <dd>{{ settings.maxSamples }} elements</dd>
+        </div>
+        <div class="summary-item">
+          <dt>Sample Order</dt>
+          <dd>{{ orderLabels[settings.orderMode] }}</dd>
+        </div>
+        <div class="summary-item">
+          <dt>Display Mode</dt>
+          <dd>{{ displayLabels[settings.displayMode] }}</dd>
+        </div>
+      </dl>
+    </section>
   </aside>
 </template>
 
@@ -67,6 +100,35 @@ const { settings } = useVisualizationSettings();
   border-radius: 8px;
   padding: 0.75rem;
   background: #f9fafb;
+}
+
+.summary-panel {
+  margin-top: 1rem;
+}
+
+.configuration-summary {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.summary-item dt {
+  color: #4b5563;
+  font-size: 0.8rem;
+}
+
+.summary-item dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: right;
 }
 
 .panel h3 {

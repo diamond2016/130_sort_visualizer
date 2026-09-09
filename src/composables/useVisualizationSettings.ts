@@ -5,6 +5,7 @@ export type OrderMode = "random" | "increasing" | "decreasing";
 export type SpeedMode = "slow" | "medium" | "fast";
 
 export interface VisualizationSettings {
+  algorithm: string;
   displayMode: DisplayMode;
   orderMode: OrderMode;
   maxSamples: number;
@@ -19,6 +20,7 @@ export const SPEED_PRESETS: Record<SpeedMode, number> = {
 };
 
 const settings = reactive<VisualizationSettings>({
+  algorithm: "Bubble Sort",
   displayMode: "bars",
   orderMode: "random",
   maxSamples: 15,

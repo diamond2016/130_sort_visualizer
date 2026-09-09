@@ -40,7 +40,6 @@ const canStep = computed(() =>
 )
 
 // --- Sorting ---
-const sortingAlgorithm = ref<string>('Bubble Sort');
 const algorithms: SortingAlgorithm[] = [
   { name: 'Bubble Sort', impl: bubbleSort },
   { name: 'Insertion Sort', impl: insertionSort },
@@ -52,7 +51,7 @@ const algorithms: SortingAlgorithm[] = [
   { name: 'Radix Sort', impl: radixSort }
 ];
 const sorter = computed<SortingAlgorithmFn>(() => {
-  const algo = algorithms.find(a => a.name === sortingAlgorithm.value);
+  const algo = algorithms.find(a => a.name === settings.algorithm);
   return algo ? algo.impl : bubbleSort;
 });
 
@@ -327,7 +326,7 @@ onUnmounted(() => {
       <nav aria-label="Algorithm selector">
         <form @submit.prevent>
           <label for="algorithm-select">Algorithm:&nbsp;</label>
-          <select id="algorithm-select" v-model="sortingAlgorithm">
+          <select id="algorithm-select" v-model="settings.algorithm">
             <option v-for="algo in algorithms" :key="algo.name" :value="algo.name">
               {{ algo.name }}
             </option>
